@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import WeatherDelaySection from "./Components/WeatherDelaySection";
 import TodaysSettings from "./Components/TodaysSettings";
 import WidgetSettings from "./Components/WidgetSettings";
+import ManagementPanel from "./Components/ManagementPanel";
 
 export default async function AdminDashboardPage() {
     const today = new Date();
@@ -40,66 +41,14 @@ export default async function AdminDashboardPage() {
         {/* Management Panels */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Pin Sets */}
-          <div className="bg-white rounded-2xl shadow p-6">
-            <h3 className="font-semibold mb-4">Pin Sets</h3>
-            <ul className="space-y-3">
-              <li className="flex justify-between items-center">
-                <span>Set 1 – White Pins</span>
-                <button className="text-sm text-blue-600">Edit</button>
-              </li>
-              <li className="flex justify-between items-center">
-                <span>Set 2 – Blue Pins</span>
-                <button className="text-sm text-blue-600">Edit</button>
-              </li>
-              <li className="flex justify-between items-center">
-                <span>Set 3 – Back Pins</span>
-                <button className="text-sm text-blue-600">Edit</button>
-              </li>
-            </ul>
-            <button className="mt-4 text-sm text-green-700 hover:cursor-pointer">+ Add Pin Set</button>
-          </div>
+          <ManagementPanel title={'Pin Sets'} array={pinLocations} />
 
           {/* Cart Rules */}
-          <div className="bg-white rounded-2xl shadow p-6">
-            <h3 className="font-semibold mb-4">Cart Rules</h3>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-2 justify-between">
-                <span>Cart Path Only</span>
-                <button className="text-sm text-blue-600">Edit</button>
-              </li>
-              <li className="flex items-center gap-2 justify-between">
-                <span>90° Rule</span>
-                <button className="text-sm text-blue-600">Edit</button>
-              </li>
-              <li className="flex items-center gap-2 justify-between">
-                <span>Free Roam</span>
-                <button className="text-sm text-blue-600">Edit</button>
-              </li>
-            </ul>
-            <button className="mt-4 text-sm text-green-700 hover:cursor-pointer">+ Add Cart Rule</button>
-          </div>
-        {/* </section> */}
+          <ManagementPanel title={'Cart Rules'} array={[{label: 'Cart Path Only'}, {label: '90° Rule'}, {label: 'Free Roam'}]} />
        
           {/* Course Conditions */}
         
-          <div className="bg-white rounded-2xl shadow p-6">
-            <h3 className="font-semibold mb-4">Course Conditions</h3>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-2 justify-between">
-                <span>Perfect</span>
-                <button className="text-sm text-blue-600">Edit</button>
-              </li>
-              <li className="flex items-center gap-2 justify-between">
-                <span>Soggy</span>
-                <button className="text-sm text-blue-600">Edit</button>
-              </li>
-              <li className="flex items-center gap-2 justify-between">
-                <span>Standing Water</span>
-                <button className="text-sm text-blue-600">Edit</button>
-              </li>
-            </ul>
-            <button className="mt-4 text-sm text-green-700 hover:cursor-pointer">+ Add Cart Rule</button>
-          </div>
+          <ManagementPanel title={'Course Conditions'} array={[{label: 'Perfect'}, {label: 'Wet'}, {label: 'Standing Water'}]} />
         </section>
 
         {/* Widget Settings */}
