@@ -1,7 +1,5 @@
 
-import MyToggle from "./Components/MyToggle";
 import { createClient } from "@/lib/supabase/server";
-import WeatherDelaySection from "./Components/WeatherDelaySection";
 import TodaysSettings from "./Components/TodaysSettings";
 import WidgetSettings from "./Components/WidgetSettings";
 import ManagementPanel from "./Components/ManagementPanel";
@@ -49,6 +47,8 @@ export default async function AdminDashboardPage() {
           {/* Course Conditions */}
         
           <ManagementPanel title={'Course Conditions'} array={[{label: 'Perfect'}, {label: 'Wet'}, {label: 'Standing Water'}]} />
+
+          {/*TODO Options for Setting reoccuring course closure times */}
         </section>
 
         {/* Widget Settings */}

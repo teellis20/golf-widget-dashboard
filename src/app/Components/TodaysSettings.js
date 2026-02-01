@@ -17,6 +17,8 @@ export default function TodaysSettings({pinLocations}) {
         cartRules: '',
         courseConditions: '',
         greensSpeed: '',
+        courseClosure: false,
+        closureReason: '',
         weatherDelay: false,
         estimatedReturnTime: ''
     });
@@ -87,7 +89,22 @@ export default function TodaysSettings({pinLocations}) {
                       />
                     </div>
                   </div>
-        
+
+                  {/* Course Closure */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex items-center gap-2">
+                            <MyToggle label='Course Closed?' value={formData.courseClosure} setValue={(value) => handleInputChange('courseClosure', value)} />
+                        </div>
+                        <div>
+                            <label className={`block font-medium `}>Closure Reason?</label>
+                            <input
+                                disabled={!formData.courseClosure}
+                                className="mt-1 w-full border rounded-lg p-2 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                placeholder="e.g. Due to weather"
+                                onChange={(e) => handleInputChange('closureReason', e.target.value)}
+                            />
+                        </div>
+                  </div>
                   {/* weather delay */}
                   {/* <WeatherDelaySection /> */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
