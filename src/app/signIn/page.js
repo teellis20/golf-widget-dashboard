@@ -30,7 +30,7 @@ export default function SignUpPage() {
     }, [credentials, password]);
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setValidated(false);
         const formData = {
@@ -38,6 +38,7 @@ export default function SignUpPage() {
             password
         };
         console.log("Form submitted with data:", formData);
+        
         // Add further submission logic here (e.g., API call)
         // if submission fails, set error to true
         // setError(true);

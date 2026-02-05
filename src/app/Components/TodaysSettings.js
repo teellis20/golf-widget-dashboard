@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import WeatherDelaySection from "./WeatherDelaySection";
 import MyToggle from "./MyToggle";
 
-export default function TodaysSettings({pinLocations}) {
+export default function TodaysSettings({data}) {
         
     // const [todayPinPlacement, setTodayPinPlacement] = useState('');
     // const [todayCartRules, setTodayCartRules] = useState('');
@@ -13,9 +13,9 @@ export default function TodaysSettings({pinLocations}) {
     // const [todayWeatherDelay, setTodayWeatherDelay] = useState(false);
     // const [todayEstimatedReturnTime, setTodayEstimatedReturnTime] = useState('');
     const [formData, setFormData] = useState({
-        pinPlacement: '',
-        cartRules: '',
-        courseConditions: '',
+        pinPlacement: data.current_pin.label || '',
+        cartRules: data.current_cart_rule.label ||'',
+        courseConditions: data.current_condition ||'',
         greensSpeed: '',
         courseClosure: false,
         closureReason: '',
@@ -23,6 +23,8 @@ export default function TodaysSettings({pinLocations}) {
         estimatedReturnTime: ''
     });
     const [todayDirty, setTodayDirty] = useState(false);
+
+    // console.log(pinLocations)
 
     // useEffect(() => {
     //     // check if the form data matches initial state to set dirty flag
@@ -51,9 +53,13 @@ export default function TodaysSettings({pinLocations}) {
                   {/* Pin Placement */}
                   <div>
                     <label className="block font-medium">Pin Placement</label>
-                    <select onChange={(e) => handleInputChange('pinPlacement', e.target.value)} className="mt-1 w-full border rounded-lg p-2">
-                      {pinLocations && pinLocations.map((pin) => (
-                        <option key={pin.label}>{pin.label}</option>
+                    <select 
+                        value={formData.pinPlacement}
+                        onChange={(e) => handleInputChange('pinPlacement', e.target.value)} 
+                        className="mt-1 w-full border rounded-lg p-2"
+                    >
+                      {data?.pin_locations && data.pin_locations.map((pin) => (
+                        <option key={pin.id}>{pin.label}</option>
                       ))}
                     </select>
                     <p className="text-sm text-yellow-600 mt-1">⚠️ Not yet updated today</p>
@@ -62,10 +68,14 @@ export default function TodaysSettings({pinLocations}) {
                   {/* Cart Rules */}
                   <div>
                     <label className="block font-medium">Cart Rules</label>
-                    <select onChange={(e) => handleInputChange('cartRules', e.target.value)} className="mt-1 w-full border rounded-lg p-2">
-                      <option>90° Rule</option>
-                      <option>Cart Path Only</option>
-                      <option>Free Roam</option>
+                    <select
+                        value={formData.cartRules}
+                        onChange={(e) => handleInputChange('cartRules', e.target.value)}
+                        className="mt-1 w-full border rounded-lg p-2"
+                    >
+                      {data.cart_rules && data.cart_rules.map((rule) => (
+                        <option key={rule.id}>{rule.label}</option>
+                      ))}
                     </select>
                     <p className="text-sm text-gray-500 mt-1">Last updated: 6:58am</p>
                   </div>
@@ -74,10 +84,14 @@ export default function TodaysSettings({pinLocations}) {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block font-medium">Course Conditions</label>
-                      <select onChange={(e) => handleInputChange('courseConditions', e.target.value)} className="mt-1 w-full border rounded-lg p-2">
-                        <option>Open</option>
-                        <option>Frost Delay</option>
-                        <option>Closed</option>
+                      <select
+                        value={formData.courseConditions}
+                        onChange={(e) => handleInputChange('courseConditions', e.target.value)}
+                        className="mt-1 w-full border rounded-lg p-2"
+                    >
+                        {data.course_conditions && data.course_conditions.map((cond) => (
+                        <option key={cond.id}>{cond.label}</option>
+                      ))}
                       </select>
                     </div>
                     <div>

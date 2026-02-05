@@ -8,7 +8,7 @@ export default function ManagementPanel({title, array}) {
     const [items, setItems] = useState(array || []);
     const [deleteSelected, setDeleteSelected] = useState(false);
 
-    console.log('array prop:', array); 
+    // console.log('array prop:', array); 
 
     //Todo: Add call to backend when deleted or saving edits or adding new items
     // will need to have a prop from the main page to call

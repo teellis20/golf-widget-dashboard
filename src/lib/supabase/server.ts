@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import { createClient as cc } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 
 export async function createClient() {
@@ -28,4 +29,18 @@ export async function createClient() {
       },
     }
   )
+}
+
+export async function supabaseAdmin () {
+  return cc(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_SERVICE_ROLE_SECRET!, 
+    {
+    auth: {
+      // These options are often necessary in server-side rendering (SSR) environments
+      // to prevent the client from using a user's session in place of the service key
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+});
 }
