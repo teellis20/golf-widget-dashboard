@@ -1,47 +1,79 @@
 
 'use client';
 const { useState, useEffect} = require("react");
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
 
-    const [credentials, setCredentials] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [validated, setValidated] = useState(false);
     const [error, setError] = useState(false);
+    const router = useRouter();
 
-    const validate = (credentials, password) => {
-        if (!credentials || !password) {
+    const validate = (email, password) => {
+        if (!email || !password) {
             console.log("Validation failed: Missing fields");
             setValidated(false);
             return false;
         }
-        if (credentials.trim() === '' || password.trim() === '') {
+        if (email.trim() === '' || password.trim() === '') {
             console.log("Validation failed: Empty fields");
-            credentials.trim() === '' ? setCredentials('') : setPassword('');
+            email.trim() === '' ? setEmail('') : setPassword('');
             setValidated(false);
             return false;
         }
         setValidated(true);
     }
 
+    useEffect(() => {
+        const checkIfSignedIn = async () => {
+            const supabase = createClient();
+            const {data} = await supabase.auth.getUser()
+
+            if (data.user) router.replace('/')
+
+        }
+
+        checkIfSignedIn();
+    })
+
 
     useEffect(() => {
-        validate(credentials, password);
-    }, [credentials, password]);
+        validate(email, password);
+    }, [email, password]);
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setValidated(false);
         const formData = {
-            credentials,
+            email,
             password
         };
         console.log("Form submitted with data:", formData);
-        
-        // Add further submission logic here (e.g., API call)
-        // if submission fails, set error to true
-        // setError(true);
+
+        try {
+            const supabase = createClient()
+            const { error } = await supabase.auth.signInWithPassword(formData)
+            
+            if ( error) {
+                console.log('sign in error: ', error)
+                // console.log('data user?? ', data.user)
+                setError(true)
+                return
+            }
+            
+            router.replace('/');
+            // if submission fails, set error to true
+            // setError(true);
+        } catch (e) {
+            console.log('sign in error: ', error)
+                // console.log('data user?? ', data.user)
+                setError(true)
+                return
+        }
     }
 
   return (
@@ -57,13 +89,13 @@ export default function SignUpPage() {
           
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium">Email or Course ID</label>
+            <label className="block text-sm font-medium">Course Email</label>
             <input
-              name="credentials"
-              id="credentials"
+              name="email"
+              id="email"
               type="text"
-              value={credentials}
-              onChange={(e) => setCredentials(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="mt-1 w-full border rounded-lg p-2"
               placeholder="proshop@oakvalleygc.com"
             />

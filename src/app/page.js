@@ -1,9 +1,12 @@
+// 'use server';
 
 import { createClient } from "@/lib/supabase/server";
 import TodaysSettings from "./Components/TodaysSettings";
 import WidgetSettings from "./Components/WidgetSettings";
 import ManagementPanel from "./Components/ManagementPanel";
 import { redirect } from "next/navigation";
+import { LogOut } from "lucide-react";
+import LogoutBtn from "./Components/LogoutBtn";
 
 export default async function AdminDashboardPage() {
     const today = new Date();
@@ -61,6 +64,17 @@ export default async function AdminDashboardPage() {
       }
 
   // console.log('DATA!!!! ', data)
+  const handleLogout = async () => {
+    'use server';
+    const supabase = await createClient();
+    const { error } = await supabase.auth.signOut();
+    if (!error) {
+      redirect('/signIn');
+    } else {
+      console.error("Error logging out:", error.message);
+    }
+
+  }
 
 
   return (
@@ -68,7 +82,10 @@ export default async function AdminDashboardPage() {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <header className="bg-white rounded-2xl shadow p-6">
-          <h1 className="text-2xl font-semibold">{greeting}, {data?.name} 🌅</h1>
+          <div className="flex justify-between">
+            <h1 className="text-2xl font-semibold">{greeting}, {data?.name} 🌅</h1>
+            <LogoutBtn handleClick={handleLogout} />
+          </div>
           <p className="text-gray-500">{formattedDate}</p>
         </header>
 
