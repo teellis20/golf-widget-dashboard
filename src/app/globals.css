@@ -43,3 +43,383 @@ body {
   width: 85%;
 
 }
+
+/* widget css */
+.my-widget {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 999999;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* Primary circular widget button */
+#widget-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #59c894 0%, #3bacc0 100%);
+  box-shadow: 0 8px 20px rgba(16,24,40,0.18), 0 2px 6px rgba(16,24,40,0.08);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 180ms cubic-bezier(.2,.8,.2,1), box-shadow 180ms;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#widget-container:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 14px 30px rgba(16,24,40,0.24), 0 6px 12px rgba(16,24,40,0.12);
+}
+
+#widget-container:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+#widget-container:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(99,102,241,0.12);
+}
+
+/* Icon inside the button */
+#widget-icon {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  filter: drop-shadow(0 4px 10px rgba(2,6,23,0.12));
+}
+
+/* Small tooltip that appears on hover */
+.widget-tooltip {
+  position: absolute;
+  right: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%) translateX(6px);
+  background: rgba(2,6,23,0.92);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.24);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.my-widget:hover .widget-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  #widget-container { transition: none; }
+  .widget-tooltip { transition: none; }
+}
+
+/* Widget panel styles */
+.widget-panel {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 32vw;
+  max-width: calc(100vw - 48px);
+  height: 75vh;
+  max-height: calc(100vh - 48px);
+  background: rgba(242, 242, 242, 0.9);
+  /* background: '#fff'; */
+  border-radius: 5px;
+  box-shadow: 0 20px 50px rgba(2,6,23,0.2);
+  transform: translateX(110%);
+  opacity: 0;
+  transition: transform 320ms cubic-bezier(.2,.8,.2,1), opacity 220ms ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000000;
+}
+
+.widget-panel.open {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.widget-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  /* border-bottom: 1px solid rgba(2,6,23,0.06); */
+  /* background: linear-gradient(180deg, #59c894 0%, #3bacc0 100%); */
+}
+.widget-panel-title { 
+  font-size: xx-large;
+  /* font-family: 'MyFont-bold', sans-serif; */
+  font-weight: bold;
+  color: #061124;
+  align-self: center; 
+  margin: 10px;
+}
+.widget-panel-close {
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: #475569;
+  padding: 6px;
+  border-radius: 8px;
+  align-self: flex-end;
+  position: absolute;
+  top: 5px;
+  right: 6px;
+}
+.widget-panel-close:hover, .widget-panel-refresh:hover { background: rgba(2,6,23,0.04); }
+
+.widget-panel-body {
+  padding: 5px;
+  flex: 1;
+  overflow: auto;
+  /* background: linear-gradient(180deg,#ffffff,#f7fafc); */
+}
+
+.widget-panel-body::-webkit-scrollbar {
+  width: 8px;
+}
+.widget-panel-body::-webkit-scrollbar-thumb {
+  background: rgba(99,102,241,0.2);
+  border-radius: 4px;
+}
+
+.widget-panel-refresh {
+  background: transparent;
+  border: none;
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+  color: #475569;
+  padding: 6px;
+  border-radius: 8px;
+  align-self: flex-start;
+  position: absolute;
+  top: 7px;
+  left: 6px;
+}
+
+/* Footer input area (affixed to bottom of panel) */
+.widget-panel-footer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 10px;
+  border-top: 1px solid rgba(2,6,23,0.06);
+  background: linear-gradient(180deg,#fff,#fbfdff);
+}
+
+
+/* When panel is open, subtly hide the floating button */
+body.widget-panel-open .my-widget #widget-container {
+  transform: scale(0.96) translateX(-8px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+@media (max-width: 1000px) {
+  .widget-panel {
+    width: 50vw;
+  }
+  .widget-panel.open { transform: translateY(0); }
+}
+
+/* Small screens: panel fills bottom area */
+@media (max-width: 520px) {
+  .widget-panel {
+    width: 100vw;
+    right: 0;
+    bottom: 0;
+    border-radius: 12px 12px 0 0;
+    height: 48vh;
+    max-height: 78vh;
+    transform: translateY(110%);
+  }
+  .widget-panel.open { transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .widget-panel { transition: none; }
+}
+
+/*  ICONS */
+.card-icon {
+  width: 75px;
+  height: 75px;
+  object-fit: cover;
+  display: block;
+  filter: drop-shadow(0 4px 10px rgba(2,6,23,0.12));
+  /* margin-right: 10px; */
+}
+
+#cart-icon {
+  width: 125px;
+  height: 125px;
+  object-fit: cover;
+  display: block;
+  filter: drop-shadow(0 4px 10px rgba(2,6,23,0.12));
+  margin-right: 10px;
+}
+
+#pin-icon {
+  width: 125px;
+  height: 175px;
+  object-fit: cover;
+  display: block;
+  /* filter: drop-shadow(0 4px 10px rgba(2,6,23,0.12));
+  margin-right: 10px; */
+}
+
+#sunset-icon {
+  height: 50px;
+  object-fit: contain;
+  margin: 5px 0 5px 0;
+}
+
+#wind-icon {
+  height: 50px;
+  object-fit: contain;
+  margin: 5px 0 5px 0;
+}
+
+#conditions-icon {
+  width: 150px;
+}
+
+/* Card styles */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(2,6,23,0.08);
+  /* padding: 16px; */
+  margin-bottom: 10px;
+}
+
+.card-title {
+  /* font-family: 'MyFont-bold', sans-serif; */
+  font-weight: bold;
+  color: black;
+  font-size: 22px;
+  margin-top: 2px;
+  margin-bottom: 5px;
+}
+
+.card-subtitle {
+  /* font-family: 'MyFont-bold', sans-serif; */
+  font-weight: bold;
+  color: black;
+  font-size: 16px;
+  margin-top: 2px;
+  margin-bottom: 5px;
+}
+
+.card-text {
+  /* font-family: 'MyFont-regular', sans-serif; */
+  color: black;
+  margin-top: 0;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+#record {
+  font-size: 55px;
+  margin: 0;
+}
+
+#card-container-top {
+  /* width: 100%; */
+  display: flex;
+  margin: 5px;
+}
+
+#card-container-left {
+  width: 55%;
+}
+
+#card-container-bottom {
+  /* width: 100%; */
+  display: flex;
+  justify-content: space-between;
+  margin: 5px;
+}
+
+#cart-card {
+  /* width: 60%; */
+  background-color: #7AD4AE;
+}
+
+#weather-container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+#wind-card {
+  width: 48%;
+  background-color: #6CA8ED;
+  /* margin: 5px */
+}
+
+#sunset-card {
+  width: 48%;
+  background-color: #D58026;
+}
+
+#pin-card {
+  width: 45%;
+  background-color: #77D95C;
+  margin-left: 10px;
+}
+
+#pin-info {
+  /* font-family: 'myFont-bold', sans-serif; */
+  font-weight: bold;
+  font-size: 35px;
+  margin: 0;
+}
+
+#conditions-card {
+  background-color: #34E7DE;
+  width: 53%;
+}
+
+#record-card {
+  width: 45%;
+  background-color: #FD7070;
+}
+
+#delay-card {
+  background-color: #D8F871;
+}
+
+#lightning-icon {
+  width: 200px;
+  height: 200px;
+  margin-bottom: 10px;
+}
+
+#delay-time {
+  /* font-family: 'MyFont-bold', sans-serif; */
+  font-weight: bold;
+  font-size: 30px;
+  margin: 5px;
+}

@@ -7,6 +7,7 @@ import ManagementPanel from "./Components/ManagementPanel";
 import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
 import LogoutBtn from "./Components/LogoutBtn";
+import Preview from "./Components/Preview";
 
 export default async function AdminDashboardPage() {
     const today = new Date();
@@ -109,6 +110,8 @@ export default async function AdminDashboardPage() {
 
         {/* Widget Settings */}
         <WidgetSettings />
+
+      <Preview data={data}/>
       </div>
     </div>
   );

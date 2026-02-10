@@ -37,7 +37,23 @@ export default function SignUpPage() {
         }
 
         checkIfSignedIn();
-    })
+    }, []);
+
+    useEffect(() => {
+      //TODO check if works
+      const handleDocumentKeyDown = (event) => {
+        if (event.key === 'Enter') {
+          console.log('Global Enter key press detected!');
+          handleSubmit()
+        }
+      };
+
+      document.addEventListener('keydown', handleDocumentKeyDown);
+
+      return () => {
+        document.removeEventListener('keydown', handleDocumentKeyDown);
+      };
+    }, []); 
 
 
     useEffect(() => {
@@ -46,7 +62,7 @@ export default function SignUpPage() {
 
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
         setValidated(false);
         const formData = {
             email,
