@@ -402,6 +402,12 @@ body.widget-panel-open .my-widget #widget-container {
   width: 53%;
 }
 
+/* #conditions-text {
+  font-weight: bold;
+  font-size: 18px;
+  /* color: 'white' */
+/* } */ 
+
 #record-card {
   width: 45%;
   background-color: #FD7070;
@@ -409,17 +415,24 @@ body.widget-panel-open .my-widget #widget-container {
 
 #delay-card {
   background-color: #D8F871;
+  padding: 15px
 }
 
-#lightning-icon {
+#lightning-icon, #closed-icon {
   width: 200px;
   height: 200px;
   margin-bottom: 10px;
 }
 
-#delay-time {
-  /* font-family: 'MyFont-bold', sans-serif; */
+#delay-time, #closed-reason {
   font-weight: bold;
   font-size: 30px;
   margin: 5px;
 }
+
+#closed-card {
+  background-color: crimson;
+  padding: 15px
+}
+
+

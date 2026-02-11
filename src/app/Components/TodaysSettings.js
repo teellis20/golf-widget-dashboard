@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import WeatherDelaySection from "./WeatherDelaySection";
 import MyToggle from "./MyToggle";
 
-export default function TodaysSettings({data}) {
+export default function TodaysSettings({data, setData}) {
         
     // const [todayPinPlacement, setTodayPinPlacement] = useState('');
     // const [todayCartRules, setTodayCartRules] = useState('');
@@ -12,16 +12,16 @@ export default function TodaysSettings({data}) {
     // const [todayGreensSpeed, setTodayGreensSpeed] = useState('');
     // const [todayWeatherDelay, setTodayWeatherDelay] = useState(false);
     // const [todayEstimatedReturnTime, setTodayEstimatedReturnTime] = useState('');
-    const [formData, setFormData] = useState({
-        pinPlacement: data.current_pin.label || '',
-        cartRules: data.current_cart_rule.label ||'',
-        courseConditions: data.current_condition ||'',
-        greensSpeed: '',
-        courseClosure: false,
-        closureReason: '',
-        weatherDelay: false,
-        estimatedReturnTime: ''
-    });
+    // const [formData, setFormData] = useState({
+    //     pinPlacement: data?.current_pin?.label || '',
+    //     cartRules: data?.current_cart_rule?.label ||'',
+    //     courseConditions: data?.current_condition ||'',
+    //     greensSpeed: '',
+    //     courseClosure: data?.course_closed,
+    //     closureReason: data?.course_closed_reason,
+    //     weatherDelay: data?.weather_delay,
+    //     estimatedReturnTime: data?.weather_delay_resume_time
+    // });
     const [todayDirty, setTodayDirty] = useState(false);
 
     // console.log(pinLocations)
@@ -29,16 +29,43 @@ export default function TodaysSettings({data}) {
     // useEffect(() => {
     //     // check if the form data matches initial state to set dirty flag
     // }, [formData]);
+
+    // useEffect(() => {
+      
+    // }, [data])
+
+    const convertToLocaleTime = (string) => {
+      if (string === null) return ''
+      let time = new Date(string);
+       const today = new Date();
+      // const oneWeekInMilliseconds = 7 * 24 * 60 * 60 * 1000;
+      const timeDifference = time.getTime() - today.getTime();
+      const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+      if (daysDifference < 7) {
+        return time.toLocaleDateString('en-US', {
+          weekday: 'long', hour: 'numeric', minute: 'numeric' 
+        })
+      } else {
+        return time.toLocaleDateString('en-US', {
+          month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric'
+        })
+      }
+      
+    }
     
     const handleSaveToday = () => {
        if (!todayDirty) return;
        // Implement save logic here
-       console.log("Saving today's updates..." , formData);
+      //  console.log("Saving today's updates..." , formData);
        setTodayDirty(false);
     }
 
     const handleInputChange = (field, value) => {
-        setFormData((prevData) => ({
+        // setFormData((prevData) => ({
+        //     ...prevData,
+        //     [field]: value
+        // }));
+        setData((prevData) => ({
             ...prevData,
             [field]: value
         }));
@@ -54,30 +81,30 @@ export default function TodaysSettings({data}) {
                   <div>
                     <label className="block font-medium">Pin Placement</label>
                     <select 
-                        value={formData.pinPlacement}
-                        onChange={(e) => handleInputChange('pinPlacement', e.target.value)} 
+                        value={data.current_pin.id}
+                        onChange={(e) => handleInputChange('current_pin', {id: e.target.value, label: e.target.selectedOptions[0].dataset.label})} 
                         className="mt-1 w-full border rounded-lg p-2"
                     >
-                      {data?.pin_locations && data.pin_locations.map((pin) => (
-                        <option key={pin.id}>{pin.label}</option>
+                      {data?.pin_locations && data?.pin_locations.map((pin) => (
+                        <option key={pin.id} data-label={pin.label} value={pin.id}>{pin.label}</option>
                       ))}
                     </select>
-                    <p className="text-sm text-yellow-600 mt-1">⚠️ Not yet updated today</p>
+                    <p className="text-sm text-gray-500 mt-1">Last updated: {convertToLocaleTime(data.current_pin_last_updated)}</p>
                   </div>
         
                   {/* Cart Rules */}
                   <div>
                     <label className="block font-medium">Cart Rules</label>
                     <select
-                        value={formData.cartRules}
-                        onChange={(e) => handleInputChange('cartRules', e.target.value)}
+                        value={data.current_cart_rule.id}
+                        onChange={(e) => handleInputChange('current_cart_rule', {id: e.target.value, label: e.target.selectedOptions[0].dataset.label})}
                         className="mt-1 w-full border rounded-lg p-2"
                     >
-                      {data.cart_rules && data.cart_rules.map((rule) => (
-                        <option key={rule.id}>{rule.label}</option>
+                      {data?.cart_rules && data?.cart_rules.map((rule) => (
+                        <option key={rule.id} value={rule.id} data-label={rule.label}>{rule.label}</option>
                       ))}
                     </select>
-                    <p className="text-sm text-gray-500 mt-1">Last updated: 6:58am</p>
+                    <p className="text-sm text-gray-500 mt-1">Last updated: {convertToLocaleTime(data.current_rule_last_updated)}</p>
                   </div>
         
                   {/* Course Conditions */}
@@ -85,14 +112,15 @@ export default function TodaysSettings({data}) {
                     <div>
                       <label className="block font-medium">Course Conditions</label>
                       <select
-                        value={formData.courseConditions}
-                        onChange={(e) => handleInputChange('courseConditions', e.target.value)}
+                        value={data.current_condition.id}
+                        onChange={(e) => handleInputChange('current_condition', {id: e.target.value, label: e.target.selectedOptions[0].dataset.label})}
                         className="mt-1 w-full border rounded-lg p-2"
                     >
-                        {data.course_conditions && data.course_conditions.map((cond) => (
-                        <option key={cond.id}>{cond.label}</option>
+                        {data?.course_conditions && data?.course_conditions.map((cond) => (
+                        <option key={cond.id} data-label={cond.label} value={cond.id}>{cond.label}</option>
                       ))}
                       </select>
+                      <p className="text-sm text-gray-500 mt-1">Last updated: {convertToLocaleTime(data.current_condition_last_updated)}</p>
                     </div>
                     <div>
                       <label className="block font-medium">Greens Speed</label>
@@ -107,15 +135,15 @@ export default function TodaysSettings({data}) {
                   {/* Course Closure */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="flex items-center gap-2">
-                            <MyToggle label='Course Closed?' value={formData.courseClosure} setValue={(value) => handleInputChange('courseClosure', value)} />
+                            <MyToggle label='Course Closed?' value={data.course_closed} setValue={(value) => handleInputChange('course_closed', value)} />
                         </div>
                         <div>
                             <label className={`block font-medium `}>Closure Reason?</label>
                             <input
-                                disabled={!formData.courseClosure}
+                                disabled={!data.course_closed}
                                 className="mt-1 w-full border rounded-lg p-2 disabled:bg-gray-100 disabled:cursor-not-allowed"
                                 placeholder="e.g. Due to weather"
-                                onChange={(e) => handleInputChange('closureReason', e.target.value)}
+                                onChange={(e) => handleInputChange('course_closed_reason', e.target.value)}
                             />
                         </div>
                   </div>
@@ -123,15 +151,15 @@ export default function TodaysSettings({data}) {
                   {/* <WeatherDelaySection /> */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="flex items-center gap-2">
-                            <MyToggle label='Weather Delay?' value={formData.weatherDelay} setValue={(value) => handleInputChange('weatherDelay', value)} />
+                            <MyToggle label='Weather Delay?' value={data.weather_delay} setValue={(value) => handleInputChange('weather_delay', value)} />
                         </div>
                         <div>
                             <label className={`block font-medium `}>Estimated Return Time</label>
                             <input
-                                disabled={!formData.weatherDelay}
+                                disabled={!data.weather_delay}
                                 className="mt-1 w-full border rounded-lg p-2 disabled:bg-gray-100 disabled:cursor-not-allowed"
                                 placeholder="e.g. 10:30 AM"
-                                onChange={(e) => handleInputChange('estimatedReturnTime', e.target.value)}
+                                onChange={(e) => handleInputChange('weather_delay_resume_time', e.target.value)}
                             />
                         </div>
                   </div>

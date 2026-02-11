@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
 import LogoutBtn from "./Components/LogoutBtn";
 import Preview from "./Components/Preview";
+import ClientWrapper from "./Components/ClientWrapper";
 
 export default async function AdminDashboardPage() {
     const today = new Date();
@@ -28,6 +29,13 @@ export default async function AdminDashboardPage() {
       .select(`
         id,
         name,
+        weather_delay,
+        weather_delay_resume_time,
+        course_closed,
+        course_closed_reason,
+        current_pin_last_updated,
+        current_rule_last_updated,
+        current_condition_last_updated,
 
         current_pin:pin_locations!courses_current_pin_location_id_fkey (
           id,
@@ -90,28 +98,7 @@ export default async function AdminDashboardPage() {
           <p className="text-gray-500">{formattedDate}</p>
         </header>
 
-        {/* Today Panel */}
-        <TodaysSettings data={data} />
-
-        {/* Management Panels */}
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Pin Sets */}
-          <ManagementPanel title={'Pin Sets'} array={data?.pin_locations} />
-
-          {/* Cart Rules */}
-          <ManagementPanel title={'Cart Rules'} array={data?.cart_rules} />
-       
-          {/* Course Conditions */}
-        
-          <ManagementPanel title={'Course Conditions'} array={data?.course_conditions} />
-
-          {/*TODO Options for Setting reoccuring course closure times */}
-        </section>
-
-        {/* Widget Settings */}
-        <WidgetSettings />
-
-      <Preview data={data}/>
+        <ClientWrapper data={data} />
       </div>
     </div>
   );
