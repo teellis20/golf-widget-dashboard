@@ -41,6 +41,15 @@ export default function TodaysSettings({data, setData}) {
       // const oneWeekInMilliseconds = 7 * 24 * 60 * 60 * 1000;
       const timeDifference = time.getTime() - today.getTime();
       const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+      // console.log('Days Diff!! = ', daysDifference)
+      if (daysDifference == 1) {
+        const onlyTime = time.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric' })
+        return 'Today, ' + onlyTime
+      }
+      if (daysDifference == 2) {
+        const onlyTime = time.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric' })
+        return 'Yesterday, ' + onlyTime
+      }
       if (daysDifference < 7) {
         return time.toLocaleDateString('en-US', {
           weekday: 'long', hour: 'numeric', minute: 'numeric' 
