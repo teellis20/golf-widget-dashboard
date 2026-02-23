@@ -21,7 +21,7 @@ export default function Preview ({data}) {
         day: 'numeric'
     });
 
-    console.log('data???' , data)
+    // console.log('data???' , data)
 
     const getLabelFromId = (arrayName, id) => {
         return arrayName.find( (i) => i.id === id)

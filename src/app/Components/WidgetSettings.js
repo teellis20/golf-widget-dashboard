@@ -1,51 +1,41 @@
 'use client';
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, useRef } from "react";
 import MyToggle from "./MyToggle";
 
 export default function WidgetSettings({data, setData }) {
     const [isDirty, setIsDirty] = useState(false);
-    // TODO this allowing certain features is a future project. keep as static true/false for now
-    const [widgetSettings, setWidgetSettings] = useState({
+    
+    const initialSettings = useRef({
         showPinPlacement: true,
         showCartRules: true,
         showCourseConditions: true,
         showWeather: true,
-        widgetTheme: data.widget_theme,
-        widgetPosition: data.widget_position
+        widget_theme: data.widget_theme,
+        widget_position: data.widget_position
     });
+    // TODO this allowing certain features is a future project. keep as static true/false for now
 
-    useEffect(() => {
-        // Check if any widget setting has changed from the initial state
-        const initialSettings = {
-            showPinPlacement: true,
-            showCartRules: true,
-            showCourseConditions: true,
-            showWeather: true,
-            widget_theme: data.widget_theme,
-            widget_position: data.widget_position
-        };
-        const isChanged = Object.keys(initialSettings).some(key => 
-            initialSettings[key] !== widgetSettings[key]
-        );
+    const checkIfDirty = (key, value) => {
+        
+        const isChanged = initialSettings.current[key] !== value
+
         setIsDirty(isChanged);
-    }, [widgetSettings]);
+    }
 
-    const handleToggleChange = (label) => {
-        setWidgetSettings(prev => ({
+    const handleToggleChange = (label, value) => {
+        checkIfDirty(label, value)
+        setData(prev => ({
             ...prev,
             [label]: !prev[label]
         }));
     };
 
     const handleButtonToggle = (label, value) => {
+        checkIfDirty(label, value)
         setData(prev => ({
             ...prev,
             [label]: value
         }));
-        // setData(prev => ({
-        //     ...prev,
-        //     widgetSettings
-        // }))
     };
 
     const handleSave = () => {
@@ -54,7 +44,7 @@ export default function WidgetSettings({data, setData }) {
         console.log('SAVED!')
     }
 
-    console.log('DATA IN WIDGET SETTINGS! ', data)
+    // console.log('DATA IN WIDGET SETTINGS! ', data)
 
     return (
         <section className="bg-white rounded-2xl shadow p-6 space-y-6">
@@ -116,16 +106,16 @@ export default function WidgetSettings({data, setData }) {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <MyToggle disabled label='Show Pin Placement' value={widgetSettings.showPinPlacement} setValue={() => handleToggleChange('showPinPlacement')}/>
+                    <MyToggle disabled label='Show Pin Placement' value={true} setValue={(e) => handleToggleChange('showPinPlacement', e.target.value)}/>
                 </div>
                 <div className="flex items-center gap-2">
-                    <MyToggle disabled label='Show Cart Rules' value={widgetSettings.showCartRules} setValue={() => handleToggleChange('showCartRules')}/>
+                    <MyToggle disabled label='Show Cart Rules' value={true} setValue={(e) => handleToggleChange('showCartRules', e.target.value)}/>
                 </div>
                 <div className="flex items-center gap-2">
-                    <MyToggle disabled label='Show Course Conditions' value={widgetSettings.showCourseConditions} setValue={() => handleToggleChange('showCourseConditions')}/>
+                    <MyToggle disabled label='Show Course Conditions' value={true} setValue={(e) => handleToggleChange('showCourseConditions', e.target.value)}/>
                 </div>
                 <div className="flex items-center gap-2">
-                    <MyToggle disabled label='Show Weather' value={widgetSettings.showWeather} setValue={() => handleToggleChange('showWeather')}/>
+                    <MyToggle disabled label='Show Weather' value={true} setValue={(e) => handleToggleChange('showWeather', e.target.value)}/>
                 </div>
             </div>
             <button onClick={handleSave} disabled={!isDirty} className="w-full bg-green-700 text-white rounded-xl py-3 font-medium hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">

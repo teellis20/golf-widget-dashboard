@@ -11,7 +11,7 @@ export default function ClientWrapper({data}) {
     const [stateData, setStateData] = useState(data)
 
     useEffect(() => {
-        console.log('change to state data: ', stateData);
+        // console.log('change to state data: ', stateData);
     }, [stateData])
 
 
