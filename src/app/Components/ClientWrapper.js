@@ -5,6 +5,7 @@ import TodaysSettings from './TodaysSettings';
 import ManagementPanel from './ManagementPanel';
 import WidgetSettings from './WidgetSettings';
 import Preview from './Preview';
+import BottomTicker from './BottomTicker';
 
 export default function ClientWrapper({data}) {
     const [stateData, setStateData] = useState(data)
@@ -36,9 +37,9 @@ export default function ClientWrapper({data}) {
             </section>
 
             {/* Widget Settings */}
-            <WidgetSettings />
+            <WidgetSettings data={stateData} setData={setStateData}/>
 
-            <Preview data={stateData}/>
+            {stateData.widget_position !== 'bottom' ? <Preview data={stateData}/> : <BottomTicker data={stateData} />}
         </>
     )
 }

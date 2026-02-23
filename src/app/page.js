@@ -36,6 +36,8 @@ export default async function AdminDashboardPage() {
         current_pin_last_updated,
         current_rule_last_updated,
         current_condition_last_updated,
+        widget_position,
+        widget_theme,
 
         current_pin:pin_locations!courses_current_pin_location_id_fkey (
           id,

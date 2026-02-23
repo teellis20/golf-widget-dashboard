@@ -94,19 +94,19 @@ export default function Preview ({data}) {
 
     if (!isShowing) {
         return (
-            <div className='my-widget'>
+            <div className={'my-widget gw-' + data.widget_position}>
                 <button id='widget-container' type='button' 
                     aria-label='Open widget' onClick={() => setIsShowing(!isShowing)}
                 >
                     <Image id='widget-icon' alt='Widget' src={logo} />
                 </button>
-                <span className='widget-tooltip'>Widget Preview</span>
+                <span className={'widget-tooltip-' + data.widget_position}>Widget Preview</span>
             </div>
         )
     }
 
     return (
-        <aside aria-hidden={!isShowing} className={`widget-panel ${isShowing ? 'open' : ''}`}>
+        <aside aria-hidden={!isShowing} className={`widget-panel ${isShowing ? 'open' : ''} gw-${data.widget_position} gw-${data.widget_theme}`}>
             <header className="widget-panel-header">
             {/* <button class="widget-panel-refresh" aria-label="Refresh widget">\u21bb</button> */}
             <h2 className="widget-panel-title">{now}</h2>
