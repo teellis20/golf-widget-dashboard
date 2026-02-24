@@ -5,14 +5,14 @@ import { createClient } from "@/lib/supabase/client";
 import { redirect } from "next/navigation";
 import { CircleArrowLeft, CloudCheck, CloudAlert, X} from "lucide-react";
 
-export default function PinScheduler({pin_locations, pin_rotation_start, userId}) {
+export default function PinScheduler({pin_locations, current_pin_index, userId}) {
   const [numberOfPins, setNumberOfPins] = useState(pin_locations.length);
   const [schedulePreview, setSchedulePreview] = useState([]);
   const [loading, setLoading] = useState(false);
   const [startDate, setStartDate] = useState(
-    pin_rotation_start || new Date().toLocaleDateString('en-CA', {day: '2-digit', month: '2-digit', year: 'numeric'})
+    new Date().toLocaleDateString('en-CA', {day: '2-digit', month: '2-digit', year: 'numeric'})
   );
-
+  const [pinSelected, setPinSelected] = useState(current_pin_index || 0);
   const [savedSuccesfully, setSavedSuccessfully] = useState(false);
   const [saveError, setSaveError] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
@@ -20,8 +20,8 @@ export default function PinScheduler({pin_locations, pin_rotation_start, userId}
 
   useEffect(() => {
     generatePreview();
-    setIsDirty(startDate !== pin_rotation_start)
-  }, [numberOfPins, startDate]);
+    setIsDirty(pinSelected !== current_pin_index)
+  }, [pinSelected]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -35,6 +35,7 @@ export default function PinScheduler({pin_locations, pin_rotation_start, userId}
     if (!startDate) return;
 
     const preview = [];
+    console.log('PIN SELECTED INDEX: ', pinSelected)
 
     // Parse as LOCAL date safely
     const [year, month, day] = startDate.split("-").map(Number);
@@ -43,12 +44,13 @@ export default function PinScheduler({pin_locations, pin_rotation_start, userId}
     for (let i = 0; i < 10; i++) {
       const date = new Date(baseDate); // clone
       date.setDate(baseDate.getDate() + i);
+      const pinIndex = ((i % numberOfPins) + pinSelected) % numberOfPins;
 
       preview.push({
         date: date.toLocaleDateString("en-US", {
           dateStyle: "full",
         }),
-        pin: pin_locations[(i % numberOfPins)]?.label,
+        pin: pin_locations[pinIndex]?.label,
       });
     }
 
@@ -64,6 +66,7 @@ export default function PinScheduler({pin_locations, pin_rotation_start, userId}
         .from("courses")
         .update({
           pin_rotation_start: startDate,
+          pin_rotation_index: pinSelected
         })
         .eq("user_id", userId);
 
@@ -73,6 +76,7 @@ export default function PinScheduler({pin_locations, pin_rotation_start, userId}
       console.error(err);
     } finally {
       setLoading(false);
+      // setIsDirty(false);
     }
   }
 
@@ -84,14 +88,17 @@ export default function PinScheduler({pin_locations, pin_rotation_start, userId}
       </div>
 
       {/* Start Date */}
-      <div className="space-y-2">
-        <label className="font-medium">Rotation Start Date</label>
-        <input
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          className="border p-2 rounded ml-2"
-        />
+      <div className="space-y-2 w-full flex">
+        <label className="font-medium">Starting Today, Which Pin is Active?</label>
+        <select
+          value={pinSelected || ''}
+          onChange={(e) => setPinSelected(e.target.value)}
+          className="border p-2 rounded ml-2 w-6/12"
+        >
+          {pin_locations.map((pin, index) => (
+            <option key={pin.id} value={index}>{pin.label}</option>
+          ))}
+        </select>
       </div>
 
       {/* Preview */}

@@ -4,7 +4,7 @@ export default function OverrideTodaySection({ data, handleInputChange }) {
   const [showOverrideSelect, setShowOverrideSelect] = useState(false);
 
   const today = new Date().toLocaleDateString('en-CA', {day: '2-digit', month: '2-digit', year: 'numeric'});
-  console.log('TODAY IN ISO: ', today)
+//   console.log('TODAY IN ISO: ', today)
 
     const handleSave = () => {
         //TODO handle backend call here, no need to add extra clicks

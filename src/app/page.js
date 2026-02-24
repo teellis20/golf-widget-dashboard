@@ -9,6 +9,7 @@ import { LogOut } from "lucide-react";
 import LogoutBtn from "./Components/LogoutBtn";
 import Preview from "./Components/Preview";
 import ClientWrapper from "./Components/ClientWrapper";
+import { getCurrentAutoPin } from "@/lib/getCurrentAutoPin";
 
 export default async function AdminDashboardPage() {
     const today = new Date();
@@ -41,6 +42,7 @@ export default async function AdminDashboardPage() {
         widget_theme,
         pin_mode,
         pin_rotation_start,
+        pin_rotation_index,
         pin_override_date,
 
 
@@ -74,6 +76,7 @@ export default async function AdminDashboardPage() {
         )
       `)
       .eq('user_id', userData.user.id)
+      .order('id', {ascending: true})
       .maybeSingle();
 
       if (error) {
@@ -114,16 +117,8 @@ export default async function AdminDashboardPage() {
         return course.current_pin;
       }
 
-      const diffDays = calculateDayDifference(course.pin_rotation_start, course.timezone)
+      return getCurrentAutoPin(course.pin_rotation_start, course.pin_rotation_index, course.pin_locations);
 
-      const totalPins = course.pin_locations.length;
-
-      const index =
-        ((diffDays % totalPins) + totalPins) % totalPins;
-
-        console.log('index: ', index)
-
-      return course.pin_locations[index];
   }
 
   const resolvedPin = resolvePin(data)
