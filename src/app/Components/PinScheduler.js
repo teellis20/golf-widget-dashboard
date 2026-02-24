@@ -35,7 +35,7 @@ export default function PinScheduler({pin_locations, current_pin_index, userId})
     if (!startDate) return;
 
     const preview = [];
-    console.log('PIN SELECTED INDEX: ', pinSelected)
+    // console.log('PIN SELECTED INDEX: ', pinSelected)
 
     // Parse as LOCAL date safely
     const [year, month, day] = startDate.split("-").map(Number);
