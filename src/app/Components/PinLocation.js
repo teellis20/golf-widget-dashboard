@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import OverrideTodaySection from "./OverrideTodaySection";
+import { createClient } from "@/lib/supabase/client";
+import { getCurrentAutoPin } from "@/lib/getCurrentAutoPin";
 
 export default function PinLocations({data, handleInputChange}) {
 
@@ -14,10 +16,30 @@ export default function PinLocations({data, handleInputChange}) {
         return data.pin_override_date === today;
     }
 
-    const handleRemoveOverride = () => {
-        //TODO: make call to cancel the override (will need to make date null)
-        handleInputChange("pin_override_date", null);
-        handleInputChange("pin_override_pin_id", null);
+    const handleRemoveOverride = async () => {
+        try {
+            const supabase = await createClient();
+            const {data: updatedData, error} = await supabase
+            .from('courses')
+            .update({
+                pin_override_date: null,
+            })
+            .eq('id', data.id)
+
+            if (error) {
+                alert('Error removing override. Refresh the page and try again.');
+                console.log('error: ', error)
+                return
+            }
+
+            const newPin = getCurrentAutoPin(data.pin_rotation_start, data.pin_rotation_index, data.pin_locations)
+
+            handleInputChange("pin_override_date", null);
+            handleInputChange("current_pin", newPin);
+
+        } catch (err) {
+            console.log('error in catch: ', err)
+        }
     }
 
     return (
