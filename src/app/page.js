@@ -29,6 +29,7 @@ export default async function AdminDashboardPage() {
       .select(`
         id,
         name,
+        timezone,
         weather_delay,
         weather_delay_resume_time,
         course_closed,
@@ -38,6 +39,11 @@ export default async function AdminDashboardPage() {
         current_condition_last_updated,
         widget_position,
         widget_theme,
+        pin_mode,
+        pin_rotation_start,
+        pin_override_date,
+
+
 
         current_pin:pin_locations!courses_current_pin_location_id_fkey (
           id,
@@ -72,7 +78,57 @@ export default async function AdminDashboardPage() {
 
       if (error) {
         console.log('ERROR: ', error)
+    }
+
+  function getTodayInTimezone(timezone) {
+    return new Date().toLocaleDateString("en-CA", {
+      timeZone: timezone
+    });
+  }
+
+  function calculateDayDifference(startDateStr, timezone) {
+    const todayStr = getTodayInTimezone(timezone);
+
+    const start = new Date(startDateStr + "T00:00:00");
+    const today = new Date(todayStr + "T00:00:00");
+
+    const diffTime = today - start;
+    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  function resolvePin(course) {
+      if (!course) return null;
+
+      // Manual mode
+      if (course.pin_mode !== 'auto') {
+        return course.current_pin;
       }
+
+      //Override mode
+      if (course.pin_override_date === new Date().toLocaleDateString('en-CA', {day: '2-digit', month: '2-digit', year: 'numeric'}) ) {
+        return course.current_pin;
+      }
+
+      // Auto mode
+      if (!course.pin_rotation_start || !course.pin_locations?.length) {
+        return course.current_pin;
+      }
+
+      const diffDays = calculateDayDifference(course.pin_rotation_start, course.timezone)
+
+      const totalPins = course.pin_locations.length;
+
+      const index =
+        ((diffDays % totalPins) + totalPins) % totalPins;
+
+        console.log('index: ', index)
+
+      return course.pin_locations[index];
+  }
+
+  const resolvedPin = resolvePin(data)
+
+  data.current_pin = resolvedPin
 
   // console.log('DATA!!!! ', data)
   const handleLogout = async () => {

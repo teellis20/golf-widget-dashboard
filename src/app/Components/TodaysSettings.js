@@ -3,8 +3,11 @@
 import { useEffect, useState } from "react";
 import WeatherDelaySection from "./WeatherDelaySection";
 import MyToggle from "./MyToggle";
+import { useRouter } from "next/navigation";
+import PinLocations from "./PinLocation";
 
 export default function TodaysSettings({data, setData}) {
+  const router = useRouter()
         
     // const [todayPinPlacement, setTodayPinPlacement] = useState('');
     // const [todayCartRules, setTodayCartRules] = useState('');
@@ -87,7 +90,7 @@ export default function TodaysSettings({data, setData}) {
                   <h2 className="text-xl font-semibold">Today's Settings</h2>
         
                   {/* Pin Placement */}
-                  <div>
+                  {/* <div>
                     <label className="block font-medium">Pin Placement</label>
                     <select 
                         value={data.current_pin.id}
@@ -99,7 +102,10 @@ export default function TodaysSettings({data, setData}) {
                       ))}
                     </select>
                     <p className="text-sm text-gray-500 mt-1">Last updated: {convertToLocaleTime(data.current_pin_last_updated)}</p>
-                  </div>
+                  </div> */}
+
+                  {/* Pin Placement */}
+                  <PinLocations data={data} handleInputChange={handleInputChange}/>
         
                   {/* Cart Rules */}
                   <div>
