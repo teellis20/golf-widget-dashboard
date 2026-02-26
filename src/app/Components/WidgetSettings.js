@@ -117,6 +117,9 @@ export default function WidgetSettings({data, setData }) {
                 <div className="flex items-center gap-2">
                     <MyToggle disabled label='Show Weather' value={true} setValue={(e) => handleToggleChange('showWeather', e.target.value)}/>
                 </div>
+                <div className="flex items-center gap-2">
+                    <MyToggle disabled label='Show Sunset' value={true} setValue={(e) => handleToggleChange('showSunset', e.target.value)}/>
+                </div>
             </div>
             <button onClick={handleSave} disabled={!isDirty} className="w-full bg-green-700 text-white rounded-xl py-3 font-medium hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
             Save Widget Settings
