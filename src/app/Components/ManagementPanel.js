@@ -80,6 +80,11 @@ export default function ManagementPanel({
     });
   };
 
+  const handleReset = () => {
+    setItems(initialArrayRef.current);
+    setSelectedDefaultId(defaultItemId);
+  }
+
   const handleSaveAll = () => {
     if (!onSave) return;
     setLoading(true);
@@ -109,35 +114,53 @@ export default function ManagementPanel({
         {/* <span>{title.slice(0, -1)}</span> */}
       </div>
       <ul className="space-y-3">
-        {items.map((item, index) => (
+        {items.map((item, index) => {
+          const isPersisted = Boolean(item.id)
+          
+          return (
           <li key={index} className="flex justify-between items-center">
 
             <div className="flex items-center gap-3">
 
               {/* Default Selector Column */}
-                {allowDefault && Boolean(item.id) &&(
-                <div>
+                {allowDefault && (
+                <div className="relative group inline-flex items-center max-w-full">
                     <button
-                    onClick={() => {
-                        setSelectedDefaultId(item.id);
-                    }}
-                    className={`w-5 h-5 rounded border flex items-center justify-center
-                        ${selectedDefaultId === item.id
-                        ? "bg-black border-black"
-                        : "border-gray-400"
-                        }`}
-                    >
-                    {selectedDefaultId === item.id && (
-                        <div className="w-2 h-2 bg-white rounded-full" />
-                    )}
+                      onClick={() => {
+                          setSelectedDefaultId(item.id);
+                      }}
+                      className={`w-5 h-5 rounded border flex items-center justify-center hover:disabled:cursor-not-allowed disabled:bg-gray-200 disabled:border-gray-200
+                          ${selectedDefaultId === item.id
+                          ? "bg-black border-black"
+                          : "border-gray-400"
+                          }`}
+                      disabled={!isPersisted}
+                      >
+                      {selectedDefaultId === item.id && (
+                          <div className="w-2 h-2 bg-white rounded-full" />
+                      )}
+                    
                     </button>
+                    {!isPersisted && (
+                      <div className="
+                        absolute left-1/2 -translate-x-1/2 -top-9
+                        whitespace-nowrap
+                        rounded-md bg-gray-900 text-white text-xs
+                        px-2 py-1
+                        opacity-0 group-hover:opacity-100
+                        pointer-events-none
+                        transition-opacity duration-200
+                      ">
+                        Save before setting as default
+                      </div>
+                    )}
                 </div>
                 )}
 
               {editingIndex === index ? (
                 <input
                   onChange={(e) => setEditingValue(e.target.value)}
-                  className="border rounded-lg pl-2"
+                  className="border rounded-lg pl-2 w-full"
                   defaultValue={item.label}
                 />
               ) : (
@@ -183,7 +206,7 @@ export default function ManagementPanel({
               </button>
             )}
           </li>
-        ))}
+        )})}
       </ul>
 
       <div className="mt-auto pt-6 space-y-4">
@@ -224,12 +247,22 @@ export default function ManagementPanel({
         )}
 
         {hasChanges && (
-          <button
-            onClick={handleSaveAll}
-            className="w-full bg-black text-white py-2 rounded-lg hover:cursor-pointer"
-          >
-            {!loading ? 'Save Changes' : 'Saving...'}
-          </button>
+          <div className="flex justify-between mt-6 gap-3">
+              <button
+                onClick={handleReset}
+                disabled={!hasChanges}
+                className="w-full text-sm border py-2 rounded-lg hover:cursor-pointer"
+              >
+                Reset
+              </button>
+
+              <button
+                onClick={handleSaveAll}
+                className="w-full bg-black text-white py-2 rounded-lg hover:cursor-pointer"
+              >
+                {!loading ? 'Save Changes' : 'Saving...'}
+              </button>
+           </div>
         )}
       </div>
     </div>
