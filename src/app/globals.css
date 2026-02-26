@@ -299,35 +299,36 @@ body.widget-panel-open .my-widget #widget-container {
 /*  ICONS */
 .card-icon {
   width: 75px;
-  height: 75px;
-  object-fit: cover;
+  /* height: 75px; */
+  object-fit: cover ;
   display: block;
   filter: drop-shadow(0 4px 10px rgba(2,6,23,0.12));
   /* margin-right: 10px; */
 }
 
 #cart-icon {
-  width: 125px;
-  height: 125px;
+  width: 100px;
+  height: 100px;
   object-fit: cover;
   display: block;
   filter: drop-shadow(0 4px 10px rgba(2,6,23,0.12));
-  margin-right: 10px;
+  /* margin-right: 10px; */
 }
 
 #pin-icon {
-  width: 125px;
+  width: 150px;
   height: 175px;
-  object-fit: cover;
+  /* object-fit: cover; */
   display: block;
   /* filter: drop-shadow(0 4px 10px rgba(2,6,23,0.12));
   margin-right: 10px; */
 }
 
 #sunset-icon {
-  height: 50px;
-  object-fit: contain;
-  margin: 5px 0 5px 0;
+  /* height: 75px; */
+  width: 100px;
+  object-fit: fill;
+  /* margin: 5px 0 5px 0; */
 }
 
 #wind-icon {
@@ -337,7 +338,7 @@ body.widget-panel-open .my-widget #widget-container {
 }
 
 #conditions-icon {
-  width: 150px;
+  width: 75px;
 }
 
 /* Card styles */
@@ -349,7 +350,7 @@ body.widget-panel-open .my-widget #widget-container {
   justify-content: center;
   border-radius: 5px;
   box-shadow: 0 2px 10px rgba(2,6,23,0.08);
-  /* padding: 16px; */
+  padding: 5px;
   margin-bottom: 10px;
 }
 
@@ -358,8 +359,13 @@ body.widget-panel-open .my-widget #widget-container {
   font-weight: bold;
   color: black;
   font-size: 22px;
-  margin-top: 2px;
-  margin-bottom: 5px;
+  margin-top: -2px;
+  margin-bottom: 2px;
+}
+
+.move-up {
+  position: relative;
+  top: -15px;
 }
 
 .card-subtitle {
@@ -367,8 +373,8 @@ body.widget-panel-open .my-widget #widget-container {
   font-weight: bold;
   color: black;
   font-size: 16px;
-  margin-top: 2px;
-  margin-bottom: 5px;
+  /* margin-top: 2px; */
+  /* margin-bottom: 5px; */
 }
 
 .card-text {
@@ -396,8 +402,8 @@ body.widget-panel-open .my-widget #widget-container {
 
 #card-container-bottom {
   /* width: 100%; */
-  display: flex;
-  justify-content: space-between;
+  /* display: flex; */
+  /* justify-content: space-between; */
   margin: 5px;
 }
 
@@ -413,14 +419,14 @@ body.widget-panel-open .my-widget #widget-container {
 }
 
 #wind-card {
-  width: 48%;
+  /* width: 48%; */
   background-color: #6CA8ED;
   /* margin: 5px */
 }
 
 #sunset-card {
-  width: 48%;
-  background-color: #D58026;
+  /* width: 48%; */
+  background-color: #967551;
 }
 
 #pin-card {
@@ -438,7 +444,7 @@ body.widget-panel-open .my-widget #widget-container {
 
 #conditions-card {
   background-color: #34E7DE;
-  width: 53%;
+  /* width: 53%; */
 }
 
 /* #conditions-text {

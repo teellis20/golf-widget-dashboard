@@ -4,11 +4,11 @@ import Image from 'next/image';
 import { X } from 'lucide-react';
 import logo from '../../img/icon.png'
 import lightningIcon from '../../img/lightningIcon.png'
-import cartIcon from '../../img/cartIcon.png'
-import sunsetIcon from '../../img/sunsetIcon.png'
+import cartIcon from '../../img/cartIcon.svg'
+import sunsetIcon from '../../img/sunsetIcon.svg'
 import windIcon from '../../img/windIcon.png'
-import pinIcon from '../../img/pinIcon.png'
-import courseIcon from '../../img/courseIcon.png'
+import pinIcon from '../../img/pinIcon.svg'
+import courseIcon from '../../img/courseIcon.svg'
 import closedIcon from '../../img/closedIcon.png'
 import WidgetCard from './WidgetCard';
 
@@ -69,23 +69,24 @@ export default function Preview ({data}) {
                     <div id='card-container-left' className='card-container'>
                         <WidgetCard divId='cart-card' imgId='cart-icon' alt={'Golf Cart'} imgSrc={cartIcon} title={data?.current_cart_rule.label}/>
                         
-                        <div id='weather-container'>
-                            <WidgetCard divId='sunset-card' imgId='sunset-icon' alt='Sunset Icon' imgSrc={sunsetIcon} subtitle='Sunset' text='<Future weather data>' textId='sunset-time' />
-                            <WidgetCard divId='wind-card' imgId='wind-icon' alt='Wind Icon' imgSrc={windIcon} subtitle='Wind' text='<Future wind data>' textId='wind-info' />
-                        </div>
+                        <WidgetCard divId='conditions-card' imgId='conditions-icon' alt='Course Conditions' imgSrc={courseIcon} subtitle='Course Conditions' text={data?.current_condition.label} textId='conditions-text' />
+                        
                     </div>
 
                     <WidgetCard divId='pin-card' imgId='pin-icon' alt='Pin Icon' imgSrc={pinIcon} title='Pin Position' text={data?.current_pin.label} textId='pin-info' />
                     
                 </div>
-                <div id='card-container-bottom' className='card-container'>
-                    <WidgetCard divId='conditions-card' imgId='conditions-icon' alt='Course Conditions' imgSrc={courseIcon} subtitle='Course Conditions' text={data?.current_condition.label} textId='conditions-text' />
-                    <div id='record-card' className='card'>
+                <div id='card-container-bottom' className=' grid grid-cols-2 gap-2'>
+                    {/* <div id='record-card' className='card'>
                         <h2 id='record'>{data?.courseRecord || 72}</h2>
                         <p className='card-subtitle'>Course Record</p>
                         <p className='card-text' id='record-info'>{data?.recordHolder || 'No one'}</p>
                         <p className='card-text' id='record-date'>{data?.recordDate || 'TBD'}</p>
-                    </div>
+                    </div> */}
+                    {/* <div id='weather-container'> */}
+                            <WidgetCard divId='sunset-card' imgId='sunset-icon' alt='Sunset Icon' imgSrc={sunsetIcon} subtitle='Sunset' text='<Future weather data>' textId='sunset-time' sunsetFlag={true} />
+                            <WidgetCard divId='wind-card' imgId='wind-icon' alt='Wind Icon' imgSrc={windIcon} subtitle='Wind' text='<Future wind data>' textId='wind-info' />
+                        {/* </div> */}
                 </div>
             </>
         )
