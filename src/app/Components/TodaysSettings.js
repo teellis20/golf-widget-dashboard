@@ -36,6 +36,7 @@ export default function TodaysSettings({data, setData}) {
     // useEffect(() => {
       
     // }, [data])
+    // console.log('TODAYS SETTINGS DATA: ', data)
 
     const convertToLocaleTime = (string) => {
       if (string === null) return ''
@@ -45,21 +46,21 @@ export default function TodaysSettings({data, setData}) {
       const timeDifference = time.getTime() - today.getTime();
       const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
       // console.log('Days Diff!! = ', daysDifference)
-      if (daysDifference == 1) {
-        const onlyTime = time.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric' })
-        return 'Today, ' + onlyTime
+      if (daysDifference == 0) {
+        // const onlyTime = time.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric' })
+        return 'Today'
       }
-      if (daysDifference == 2) {
-        const onlyTime = time.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric' })
-        return 'Yesterday, ' + onlyTime
+      if (daysDifference == 1) {
+        // const onlyTime = time.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric' })
+        return 'Yesterday'
       }
       if (daysDifference < 7) {
-        return time.toLocaleDateString('en-US', {
-          weekday: 'long', hour: 'numeric', minute: 'numeric' 
+        return 'Last ' + time.toLocaleDateString('en-US', {
+          weekday: 'long',
         })
       } else {
         return time.toLocaleDateString('en-US', {
-          month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric'
+          month: 'numeric', day: 'numeric', 
         })
       }
       
@@ -89,29 +90,20 @@ export default function TodaysSettings({data, setData}) {
          <section className="bg-white rounded-2xl shadow p-6 space-y-6">
                   <h2 className="text-xl font-semibold">Today's Settings</h2>
         
-                  {/* Pin Placement */}
-                  {/* <div>
-                    <label className="block font-medium">Pin Placement</label>
-                    <select 
-                        value={data.current_pin.id}
-                        onChange={(e) => handleInputChange('current_pin', {id: e.target.value, label: e.target.selectedOptions[0].dataset.label})} 
-                        className="mt-1 w-full border rounded-lg p-2"
-                    >
-                      {data?.pin_locations && data?.pin_locations.map((pin) => (
-                        <option key={pin.id} data-label={pin.label} value={pin.id}>{pin.label}</option>
-                      ))}
-                    </select>
-                    <p className="text-sm text-gray-500 mt-1">Last updated: {convertToLocaleTime(data.current_pin_last_updated)}</p>
-                  </div> */}
-
-                  {/* Pin Placement */}
-                  <PinLocations data={data} handleInputChange={handleInputChange}/>
+                  <PinLocations data={data} handleInputChange={handleInputChange} lastUpdatedConverter={convertToLocaleTime}/>
         
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Cart Rules */}
                   <div>
                     <label className="block font-medium">Cart Rules</label>
+                    {(data.default_cart_rule || data.default_course_condition) && (
+                      <p className="text-xs text-gray-400">
+                        Default: {data.default_cart_rule?.label || 'None'}
+                      </p>
+                    )}
+                    
                     <select
-                        value={data.current_cart_rule.id}
+                        value={data.current_cart_rule?.id}
                         onChange={(e) => handleInputChange('current_cart_rule', {id: e.target.value, label: e.target.selectedOptions[0].dataset.label})}
                         className="mt-1 w-full border rounded-lg p-2"
                     >
@@ -123,9 +115,15 @@ export default function TodaysSettings({data, setData}) {
                   </div>
         
                   {/* Course Conditions */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  
                     <div>
                       <label className="block font-medium">Course Conditions</label>
+                      {(data.default_course_condition || data.default_cart_rule) && (
+                        <p className="text-xs text-gray-400">
+                          Default: {data.default_course_condition?.label || 'None'}
+                        </p>
+                      )}
+                      
                       <select
                         value={data.current_condition.id}
                         onChange={(e) => handleInputChange('current_condition', {id: e.target.value, label: e.target.selectedOptions[0].dataset.label})}
@@ -137,14 +135,14 @@ export default function TodaysSettings({data, setData}) {
                       </select>
                       <p className="text-sm text-gray-500 mt-1">Last updated: {convertToLocaleTime(data.current_condition_last_updated)}</p>
                     </div>
-                    <div>
+                    {/* <div>
                       <label className="block font-medium">Greens Speed</label>
                       <input
                         onChange={(e) => handleInputChange('greensSpeed', e.target.value)}
                         className="mt-1 w-full border rounded-lg p-2"
                         placeholder="e.g. 10.5"
                       />
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* Course Closure */}

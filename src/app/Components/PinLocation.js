@@ -5,7 +5,7 @@ import OverrideTodaySection from "./OverrideTodaySection";
 import { createClient } from "@/lib/supabase/client";
 import { getCurrentAutoPin } from "@/lib/getCurrentAutoPin";
 
-export default function PinLocations({data, handleInputChange}) {
+export default function PinLocations({data, handleInputChange, lastUpdatedConverter}) {
 
     const router = useRouter();
 
@@ -94,7 +94,7 @@ export default function PinLocations({data, handleInputChange}) {
                 </select>
 
                 <p className="text-sm text-gray-500">
-                    Last updated: {new Date(data.current_pin_last_updated).toLocaleDateString()}
+                    Last updated: {lastUpdatedConverter(data.current_pin_last_updated)}
                 </p>
                 </>
             )}

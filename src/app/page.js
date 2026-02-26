@@ -44,8 +44,15 @@ export default async function AdminDashboardPage() {
         pin_rotation_start,
         pin_rotation_index,
         pin_override_date,
-
-
+        
+        default_cart_rule:cart_rules!courses_default_cart_rule_id_fkey (
+          id,
+          label
+        ),
+        default_course_condition:course_conditions!courses_default_course_condition_id_fkey (
+          id,
+          label
+        ),
 
         current_pin:pin_locations!courses_current_pin_location_id_fkey (
           id,
@@ -99,6 +106,25 @@ export default async function AdminDashboardPage() {
     return Math.floor(diffTime / (1000 * 60 * 60 * 24));
   }
 
+  function resolveDefaults(lastUpdated, current_value, default_value) {
+    if (!data) return null;
+    
+    if (!default_value) return current_value;
+    
+    const daysDiff = calculateDayDifference(lastUpdated, data.timezone);
+
+    console.log('days difference: ', daysDiff)
+
+    if (daysDiff == 0) {
+      console.log('returning current: ', current_value)
+      return current_value;
+    } else {
+      console.log('returning default: ', default_value)
+      return default_value;
+    }
+
+  }
+
   function resolvePin(course) {
       if (!course) return null;
 
@@ -122,8 +148,12 @@ export default async function AdminDashboardPage() {
   }
 
   const resolvedPin = resolvePin(data)
+  const resolvedCartRule = resolveDefaults(data?.current_rule_last_updated, data?.current_cart_rule, data?.default_cart_rule);
+  const resolvedCourseCondition = resolveDefaults(data?.current_condition_last_updated, data?.current_condition, data?.default_course_condition);
 
-  data.current_pin = resolvedPin
+  data.current_pin = resolvedPin;
+  data.current_cart_rule = resolvedCartRule;
+  data.current_condition = resolvedCourseCondition;
 
   // console.log('DATA!!!! ', data)
   const handleLogout = async () => {
