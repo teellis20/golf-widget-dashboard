@@ -332,7 +332,7 @@ body.widget-panel-open .my-widget #widget-container {
 }
 
 #wind-icon {
-  height: 50px;
+  height: 100px;
   object-fit: contain;
   margin: 5px 0 5px 0;
 }
@@ -420,13 +420,13 @@ body.widget-panel-open .my-widget #widget-container {
 
 #wind-card {
   /* width: 48%; */
-  background-color: #6CA8ED;
+  background-color: #87b4e7;
   /* margin: 5px */
 }
 
 #sunset-card {
   /* width: 48%; */
-  background-color: #967551;
+  background-color: #dddb6c;
 }
 
 #pin-card {
@@ -533,20 +533,45 @@ body.widget-panel-open .my-widget #widget-container {
 }
 
 #gw-ticker.closed {
-  transform: translateY(60px);
+  transform: translateY(75px);
+}
+
+#gw-toggle.open {
+  transform: translateY(0);
+}
+
+#gw-toggle.closed {
+  transform: translateY(75px);
 }
 
 /* Toggle button */
 #gw-toggle {
-  position: absolute;
-  top: -115px;
-  right: auto;
-  background: #111;
-  color: white;
-  border: none;
-  padding: 4px 8px;
-  cursor: pointer;
+  width:156px;
+  height:28px;
+  border-radius:28px 28px 0 0;
+  border:1px solid rgba(255,255,255,0.25);
+  border-bottom:none;
+  /* background: rgba(0,0,0,0.85); */
+  /* color:#fff; */
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  padding:0;
+  line-height:1;
+  font-size:16px;
+  /* width: 25%; */
+  position: fixed;
+  bottom: 85px;
+  /* right: calc(50vw - 1%); */
+  right: calc(50vw - 10%);
+  /* border: none; */
+  /* border-radius: 18px; */
+  /* padding: 4px 8px; */
+  /* cursor: pointer; */
   font-size: 14px;
+  /* box-shadow: 0 8px 30px rgba(0,0,0,0.35); */
+  transition: transform 0.35s ease;
+  text-align: center;
 }
 
 /* ticker scrolling area */
@@ -565,18 +590,18 @@ body.widget-panel-open .my-widget #widget-container {
 }
 
 .gw-ticker-item {
-
+  width: 150px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  margin: 0 32px;
+  margin: 0 16px;
   font-size: 14px;
-
 }
 
 .gw-ticker-item img {
-  height: 50px;
-  width: 50px;
+  /* height: 50px; */
+  /* width: 50px; */
   margin-right: 6px;
   vertical-align: middle;
   opacity: 0.9;
@@ -584,6 +609,15 @@ body.widget-panel-open .my-widget #widget-container {
 }
 
 .gw-last-item {
+  width: 75px;
+}
+
+.weather-bottom-ticker {
+  margin-top: 7px;
+}
+
+.gw-ticker-bigger-icon {
+  height: 75px;
   width: 75px;
 }
 

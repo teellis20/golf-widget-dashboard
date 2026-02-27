@@ -29,6 +29,7 @@ export default async function AdminDashboardPage() {
       .from('courses')
       .select(`
         id,
+        slug,
         name,
         timezone,
         weather_delay,
@@ -89,6 +90,15 @@ export default async function AdminDashboardPage() {
       if (error) {
         console.log('ERROR: ', error)
     }
+
+  const weatherUrl = `https://oxcqifofyajbgxdsvzkr.supabase.co/functions/v1/get-weather-data?slug=${data?.slug}`
+  const weatherRes = await fetch(weatherUrl)
+
+  if (!weatherRes.ok) {
+    console.log('error fetching weather data: ', weatherRes.statusText)
+  }
+
+  const weatherData = await weatherRes.json();
 
   function getTodayInTimezone(timezone) {
     return new Date().toLocaleDateString("en-CA", {
@@ -154,6 +164,7 @@ export default async function AdminDashboardPage() {
   data.current_pin = resolvedPin;
   data.current_cart_rule = resolvedCartRule;
   data.current_condition = resolvedCourseCondition;
+  data.weather_data = weatherData;
 
   // console.log('DATA!!!! ', data)
   const handleLogout = async () => {

@@ -11,6 +11,8 @@ import pinIcon from '../../img/pinIcon.svg'
 import courseIcon from '../../img/courseIcon.svg'
 import closedIcon from '../../img/closedIcon.png'
 import WidgetCard from './WidgetCard';
+import weatherIcons from '@/lib/weatherIcons';
+
 
 export default function Preview ({data}) {
     const [isShowing, setIsShowing] = useState(false)
@@ -77,16 +79,10 @@ export default function Preview ({data}) {
                     
                 </div>
                 <div id='card-container-bottom' className=' grid grid-cols-2 gap-2'>
-                    {/* <div id='record-card' className='card'>
-                        <h2 id='record'>{data?.courseRecord || 72}</h2>
-                        <p className='card-subtitle'>Course Record</p>
-                        <p className='card-text' id='record-info'>{data?.recordHolder || 'No one'}</p>
-                        <p className='card-text' id='record-date'>{data?.recordDate || 'TBD'}</p>
-                    </div> */}
-                    {/* <div id='weather-container'> */}
-                            <WidgetCard divId='sunset-card' imgId='sunset-icon' alt='Sunset Icon' imgSrc={sunsetIcon} subtitle='Sunset' text='<Future weather data>' textId='sunset-time' sunsetFlag={true} />
-                            <WidgetCard divId='wind-card' imgId='wind-icon' alt='Wind Icon' imgSrc={windIcon} subtitle='Wind' text='<Future wind data>' textId='wind-info' />
-                        {/* </div> */}
+                    
+                    <WidgetCard divId='sunset-card' imgId='sunset-icon' alt='Sunset Icon' imgSrc={sunsetIcon} subtitle='Sunset' text={new Date(data?.weather_data?.sunset).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit', hour12: true})} textId='sunset-time' sunsetFlag={true} />
+                    <WidgetCard divId='wind-card' imgId='wind-icon' alt='Wind Icon' subtitle={data?.weather_data?.temp + '°F'} textId='wind-info' passedIcon={weatherIcons[data?.weather_data?.condition]} />
+                
                 </div>
             </>
         )

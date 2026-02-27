@@ -1,9 +1,11 @@
 'use client';
 import { useState, useEffect, useRef } from "react";
 import MyToggle from "./MyToggle";
+import { createClient } from "@/lib/supabase/client";
 
 export default function WidgetSettings({data, setData }) {
     const [isDirty, setIsDirty] = useState(false);
+    const [saving, setSaving] = useState(false);
     
     const initialSettings = useRef({
         showPinPlacement: true,
@@ -13,6 +15,18 @@ export default function WidgetSettings({data, setData }) {
         widget_theme: data.widget_theme,
         widget_position: data.widget_position
     });
+
+    useEffect(() => {
+        initialSettings.current = {
+        showPinPlacement: true,
+        showCartRules: true,
+        showCourseConditions: true,
+        showWeather: true,
+        widget_theme: data.widget_theme,
+        widget_position: data.widget_position
+        }
+    }, [data])
+
     // TODO this allowing certain features is a future project. keep as static true/false for now
 
     const checkIfDirty = (key, value) => {
@@ -38,10 +52,37 @@ export default function WidgetSettings({data, setData }) {
         }));
     };
 
-    const handleSave = () => {
-        //TODO set this up with parents to actually save the data
-        //maybe will want to just do this here, kindof makes more sense
+    const handleSave = async () => {
         console.log('SAVED!')
+        setSaving(true);
+        try {
+            const supabase = await createClient();
+            const { data: updatedCourse, error } = await supabase
+                .from('courses')
+                .update({
+                    widget_position: data.widget_position,
+                    widget_theme: data.widget_theme
+                })
+                .eq('id', data.id)
+                .select()
+                .single();
+
+            if (error) {
+                alert('Error Saving. Please try again: ' + error.message);
+                return;
+            }
+            //TODO add success alert
+
+            // setData(prev => ({
+            //     ...prev,
+            //     widget_position: updatedCourse.widget_position,
+            //     widget_theme: updatedCourse.widget_theme
+            // }));
+        } catch (err) {
+            console.log('error in catch: ', err)
+        }
+        setSaving(false);
+        setIsDirty(false);
     }
 
     // console.log('DATA IN WIDGET SETTINGS! ', data)
@@ -121,8 +162,8 @@ export default function WidgetSettings({data, setData }) {
                     <MyToggle disabled label='Show Sunset' value={true} setValue={(e) => handleToggleChange('showSunset', e.target.value)}/>
                 </div>
             </div>
-            <button onClick={handleSave} disabled={!isDirty} className="w-full bg-green-700 text-white rounded-xl py-3 font-medium hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-            Save Widget Settings
+            <button onClick={handleSave} disabled={!isDirty || saving} className="w-full bg-green-700 text-white rounded-xl py-3 font-medium hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+            {saving ? 'Saving Widget Settings...' : 'Save Widget Settings'}
             </button>
         </section>
     )
