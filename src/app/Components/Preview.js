@@ -23,12 +23,14 @@ export default function Preview ({data}) {
         day: 'numeric'
     });
 
-    // console.log('data???' , data)
+    const sunsetOptions =  {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+        timeZone: 'UTC'
+    };
 
-    const getLabelFromId = (arrayName, id) => {
-        return arrayName.find( (i) => i.id === id)
-    }
-
+   
     //TODO add outside click to close maybe
 
     const WeatherDelay = () => {
@@ -80,7 +82,7 @@ export default function Preview ({data}) {
                 </div>
                 <div id='card-container-bottom' className=' grid grid-cols-2 gap-2'>
                     
-                    <WidgetCard divId='sunset-card' imgId='sunset-icon' alt='Sunset Icon' imgSrc={sunsetIcon} subtitle='Sunset' text={new Date(data?.weather_data?.sunset).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit', hour12: true})} textId='sunset-time' sunsetFlag={true} />
+                    <WidgetCard divId='sunset-card' imgId='sunset-icon' alt='Sunset Icon' imgSrc={sunsetIcon} subtitle='Sunset' text={new Date(data?.weather_data?.sunset).toLocaleTimeString('en-US', sunsetOptions)} textId='sunset-time' sunsetFlag={true} />
                     <WidgetCard divId='wind-card' imgId='wind-icon' alt='Weather Icon' subtitle={data?.weather_data?.condition} text={data?.weather_data?.temp + '°F'} textId='wind-info' passedIcon={weatherIcons[data?.weather_data?.icon_name]} />
                 
                 </div>

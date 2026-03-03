@@ -28,6 +28,13 @@ export default function BottomTicker({data}) {
         toggleBtn.setAttribute("aria-label", isOpen ? "Collapse ticker" : "Expand ticker");
     }
 
+    const sunsetOptions =  {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+        timeZone: 'UTC'
+    };
+
     return (
         <div id="gw-ticker-wrapper">
             <div onClick={() => toggleTicker()} id="gw-toggle" className={`gw-${data.widget_theme} open` }>{showingOpen ? <ChevronDown /> : <ChevronUp />}</div>
@@ -48,7 +55,12 @@ export default function BottomTicker({data}) {
                             </div>
                         </div>
                         <div className='gw-ticker-item'>
-                            <Image height={75} width={75} src={sunsetIcon} alt='Sunset Icon'/> {new Date(data?.weather_data?.sunset).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true})} </div>            
+                            <Image height={75} width={75} src={sunsetIcon} alt='Sunset Icon'/>
+                            <div>
+                                <p>Sunset</p>
+                                <p>{new Date(data?.weather_data?.sunset).toLocaleTimeString('en-US', sunsetOptions)}</p>
+                            </div>    
+                        </div>            
                 </div>
 
                 <div aria-hidden className="gw-ticker-group">
@@ -67,7 +79,12 @@ export default function BottomTicker({data}) {
                             </div>
                         </div>
                         <div className='gw-ticker-item'>
-                            <Image height={75} width={75} src={sunsetIcon} alt='Sunset Icon'/> {new Date(data?.weather_data?.sunset).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true})}  </div>
+                            <Image height={75} width={75} src={sunsetIcon} alt='Sunset Icon'/>
+                            <div>
+                                <p>Sunset</p>
+                                <p>{new Date(data?.weather_data?.sunset).toLocaleTimeString('en-US', sunsetOptions)}</p>
+                            </div>
+                        </div>
                         
                 </div>
                 <div aria-hidden className="gw-ticker-group">
@@ -86,7 +103,12 @@ export default function BottomTicker({data}) {
                             </div>
                         </div>
                         <div className='gw-ticker-item'>
-                            <Image height={75} width={75} src={sunsetIcon} alt='Sunset Icon'/> {new Date(data?.weather_data?.sunset).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true})}  </div>
+                            <Image height={75} width={75} src={sunsetIcon} alt='Sunset Icon'/> 
+                            <div>
+                                <p>Sunset</p>
+                                <p>{new Date(data?.weather_data?.sunset).toLocaleTimeString('en-US', sunsetOptions)}</p>
+                            </div>
+                        </div>
                         
                 </div>
                 </div>
