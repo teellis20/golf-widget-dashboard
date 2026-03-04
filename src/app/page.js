@@ -10,6 +10,7 @@ import LogoutBtn from "./Components/LogoutBtn";
 import Preview from "./Components/Preview";
 import ClientWrapper from "./Components/ClientWrapper";
 import { getCurrentAutoPin } from "@/lib/getCurrentAutoPin";
+import calculateDayDifference from "@/lib/calculateDayDifference";
 
 export default async function AdminDashboardPage() {
     const today = new Date();
@@ -106,16 +107,6 @@ export default async function AdminDashboardPage() {
     });
   }
 
-  function calculateDayDifference(startDateStr, timezone) {
-    const todayStr = getTodayInTimezone(timezone);
-
-    const start = new Date(startDateStr + "T00:00:00");
-    const today = new Date(todayStr + "T00:00:00");
-
-    const diffTime = today - start;
-    return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  }
-
   function resolveDefaults(lastUpdated, current_value, default_value) {
     if (!data) return null;
     
@@ -123,13 +114,9 @@ export default async function AdminDashboardPage() {
     
     const daysDiff = calculateDayDifference(lastUpdated, data.timezone);
 
-    console.log('days difference: ', daysDiff)
-
     if (daysDiff == 0) {
-      console.log('returning current: ', current_value)
       return current_value;
     } else {
-      console.log('returning default: ', default_value)
       return default_value;
     }
 

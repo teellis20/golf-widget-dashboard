@@ -1,58 +1,38 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import WeatherDelaySection from "./WeatherDelaySection";
+import { useEffect, useState, useRef } from "react";
 import MyToggle from "./MyToggle";
 import { useRouter } from "next/navigation";
 import PinLocations from "./PinLocation";
+import { createClient } from "@/lib/supabase/client";
+import calculateDayDifference from "@/lib/calculateDayDifference";
 
 export default function TodaysSettings({data, setData}) {
-  const router = useRouter()
+    const router = useRouter()
         
-    // const [todayPinPlacement, setTodayPinPlacement] = useState('');
-    // const [todayCartRules, setTodayCartRules] = useState('');
-    // const [todayCourseConditions, setTodayCourseConditions] = useState('');
-    // const [todayGreensSpeed, setTodayGreensSpeed] = useState('');
-    // const [todayWeatherDelay, setTodayWeatherDelay] = useState(false);
-    // const [todayEstimatedReturnTime, setTodayEstimatedReturnTime] = useState('');
-    // const [formData, setFormData] = useState({
-    //     pinPlacement: data?.current_pin?.label || '',
-    //     cartRules: data?.current_cart_rule?.label ||'',
-    //     courseConditions: data?.current_condition ||'',
-    //     greensSpeed: '',
-    //     courseClosure: data?.course_closed,
-    //     closureReason: data?.course_closed_reason,
-    //     weatherDelay: data?.weather_delay,
-    //     estimatedReturnTime: data?.weather_delay_resume_time
-    // });
     const [todayDirty, setTodayDirty] = useState(false);
+    const initialDataRef = useRef(data);
 
-    // console.log(pinLocations)
+    useEffect(() => {
+      if (JSON.stringify(data) !== JSON.stringify(initialDataRef.current)) {
+        setTodayDirty(true);
+      } else {
+        setTodayDirty(false);
+      }
 
-    // useEffect(() => {
-    //     // check if the form data matches initial state to set dirty flag
-    // }, [formData]);
+    }, [data])
 
-    // useEffect(() => {
-      
-    // }, [data])
-    // console.log('TODAYS SETTINGS DATA: ', data)
 
     const convertToLocaleTime = (string) => {
       if (string === null) return ''
-      let time = new Date(string);
-       const today = new Date();
-      // const oneWeekInMilliseconds = 7 * 24 * 60 * 60 * 1000;
-      const timeDifference = time.getTime() - today.getTime();
-      const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
-      // console.log('Days Diff!! = ', daysDifference)
+      const onlyTime = new Date(string).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric' })
+      const daysDifference = calculateDayDifference(string, data.timezone)
       if (daysDifference == 0) {
-        // const onlyTime = time.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric' })
-        return 'Today'
+        return 'Today, ' + onlyTime
       }
       if (daysDifference == 1) {
-        // const onlyTime = time.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric' })
-        return 'Yesterday'
+        
+        return 'Yesterday, ' + onlyTime
       }
       if (daysDifference < 7) {
         return 'Last ' + time.toLocaleDateString('en-US', {
@@ -66,24 +46,91 @@ export default function TodaysSettings({data, setData}) {
       
     }
     
-    const handleSaveToday = () => {
-       if (!todayDirty) return;
-       // Implement save logic here
-      //  console.log("Saving today's updates..." , formData);
-       setTodayDirty(false);
+    const handleSaveToday = async () => {
+      if (!todayDirty) return;
+
+      let rotationStart = data?.pin_rotation_start;
+      let pinRotationIndex = data?.pin_rotation_index;
+      let current_pin_index = data?.pin_locations.findIndex( p => p.id == data.current_pin.id)
+
+      if (data.pin_mode !== initialDataRef.current.pin_mode) {
+        if (data.pin_mode == 'auto') {
+          rotationStart = new Date().toLocaleDateString('en-CA', {timeZone: data.timezone});
+          pinRotationIndex = current_pin_index
+        }
+      }
+
+      const changes =  {
+          p_course_id: data.id,
+          p_current_pin_location_id: data?.current_pin?.id,
+          p_current_cart_rule_id: data?.current_cart_rule?.id,
+          p_current_course_condition_id: data?.current_condition?.id,
+          p_weather_delay: data?.weather_delay,
+          p_weather_delay_resume_time: data?.weather_delay_resume_time,
+          p_course_closed: data?.course_closed,
+          p_course_closed_reason: data?.course_closed_reason,
+          p_pin_mode: data?.pin_mode,
+          p_pin_rotation_start: rotationStart,
+          p_pin_rotation_index: pinRotationIndex
+        }
+
+      try {
+        const supabase = await createClient();
+        const { data: updatedData, error } = await supabase.rpc("update_today_settings", changes);
+
+        if (error) {
+          console.log('Error: ', error)
+          alert('Error saving todays settings. Please try again.')
+          return
+        }
+
+        initialDataRef.current = data;
+
+        setData((prev) => ({
+            ...prev,
+            current_pin_last_upated: updatedData.current_pin_last_upated,
+            current_condition_last_updated: updatedData.current_condition_last_updated,
+            current_rule_last_updated: updatedData.current_rule_last_updated
+          
+        }))
+
+        initialDataRef.current.current_pin_last_upated = updatedData.current_pin_last_upated,
+        initialDataRef.current.current_condition_last_updated = updatedData.current_condition_last_updated,
+        initialDataRef.current.current_rule_last_updated = updatedData.current_rule_last_updated
+
+      } catch (err) {
+        console.log('err in catch: ', err)
+        alert('Error saving todays settings. Please try again.')
+        return
+      }
+      
+       
+      setTodayDirty(false);
     }
 
     const handleInputChange = (field, value) => {
-        // setFormData((prevData) => ({
-        //     ...prevData,
-        //     [field]: value
-        // }));
+      if (field === 'weather_delay' && !value) {
+        setData(prev => ({
+          ...prev,
+          [field]: value,
+          weather_delay_resume_time: null
+        }))
+        
+      } else if (field === 'course_closed' && !value) {
+
+        setData(prev => ({
+          ...prev,
+          [field]: value,
+          course_closed_reason: null
+        }))
+      } else {
+  
         setData((prevData) => ({
-            ...prevData,
-            [field]: value
+          ...prevData,
+          [field]: value
         }));
-        // change this to the useEffect later
-        setTodayDirty(true);
+        
+      }
     }
 
     return (
@@ -104,7 +151,7 @@ export default function TodaysSettings({data, setData}) {
                     
                     <select
                         value={data.current_cart_rule?.id}
-                        onChange={(e) => handleInputChange('current_cart_rule', {id: e.target.value, label: e.target.selectedOptions[0].dataset.label})}
+                        onChange={(e) => handleInputChange('current_cart_rule', {id: parseInt(e.target.value), label: e.target.selectedOptions[0].dataset.label})}
                         className="mt-1 w-full border rounded-lg p-2"
                     >
                       {data?.cart_rules && data?.cart_rules.map((rule) => (
@@ -126,7 +173,7 @@ export default function TodaysSettings({data, setData}) {
                       
                       <select
                         value={data.current_condition.id}
-                        onChange={(e) => handleInputChange('current_condition', {id: e.target.value, label: e.target.selectedOptions[0].dataset.label})}
+                        onChange={(e) => handleInputChange('current_condition', {id: parseInt(e.target.value), label: e.target.selectedOptions[0].dataset.label})}
                         className="mt-1 w-full border rounded-lg p-2"
                     >
                         {data?.course_conditions && data?.course_conditions.map((cond) => (
@@ -153,6 +200,7 @@ export default function TodaysSettings({data, setData}) {
                         <div>
                             <label className={`block font-medium `}>Closure Reason?</label>
                             <input
+                                value={data?.course_closed_reason || ''}
                                 disabled={!data.course_closed}
                                 className="mt-1 w-full border rounded-lg p-2 disabled:bg-gray-100 disabled:cursor-not-allowed"
                                 placeholder="e.g. Due to weather"
@@ -169,9 +217,11 @@ export default function TodaysSettings({data, setData}) {
                         <div>
                             <label className={`block font-medium `}>Estimated Return Time</label>
                             <input
+                                type="time"
+                                value={data?.weather_delay_resume_time || ''}
                                 disabled={!data.weather_delay}
                                 className="mt-1 w-full border rounded-lg p-2 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                                placeholder="e.g. 10:30 AM"
+                                placeholder="10:30"
                                 onChange={(e) => handleInputChange('weather_delay_resume_time', e.target.value)}
                             />
                         </div>

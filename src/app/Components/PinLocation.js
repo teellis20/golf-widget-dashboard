@@ -76,7 +76,7 @@ export default function PinLocations({data, handleInputChange, lastUpdatedConver
                     value={data.current_pin?.id}
                     onChange={(e) =>
                     handleInputChange("current_pin", {
-                        id: e.target.value,
+                        id: parseInt(e.target.value),
                         label: e.target.selectedOptions[0].dataset.label,
                     })
                     }

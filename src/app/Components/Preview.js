@@ -35,8 +35,12 @@ export default function Preview ({data}) {
 
     const WeatherDelay = () => {
         let returnTime = data?.weather_delay_resume_time
+        
         if (returnTime) {
-            const time = new Date(returnTime)
+            const time = new Date()
+            const hh = returnTime.slice(0,2);
+            const mm = returnTime.slice(3)
+            time.setHours(hh, mm)
             returnTime = time.toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit'
