@@ -8,23 +8,22 @@ export default function SignUpPage() {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [validated, setValidated] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(false);
     const router = useRouter();
 
-    const validate = (email, password) => {
+    const validate = () => {
         if (!email || !password) {
             console.log("Validation failed: Missing fields");
-            setValidated(false);
             return false;
         }
         if (email.trim() === '' || password.trim() === '') {
             console.log("Validation failed: Empty fields");
             email.trim() === '' ? setEmail('') : setPassword('');
-            setValidated(false);
             return false;
         }
-        setValidated(true);
+
+        return true;
     }
 
     useEffect(() => {
@@ -39,36 +38,25 @@ export default function SignUpPage() {
         checkIfSignedIn();
     }, []);
 
-    useEffect(() => {
-      //TODO check if works
-      const handleDocumentKeyDown = (event) => {
-        if (event.key === 'Enter') {
-          console.log('Global Enter key press detected!');
-          handleSubmit()
-        }
-      };
 
-      document.addEventListener('keydown', handleDocumentKeyDown);
-
-      return () => {
-        document.removeEventListener('keydown', handleDocumentKeyDown);
-      };
-    }, []); 
-
-
-    useEffect(() => {
-        validate(email, password);
-    }, [email, password]);
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault(); 
+        handleSubmit(e); 
+      }
+    };
 
 
     const handleSubmit = async (e) => {
         if (e) e.preventDefault();
-        setValidated(false);
+        if (!validate()) return;
+        setSubmitting(true)
+
+        // setValidated(false);
         const formData = {
             email,
             password
         };
-        console.log("Form submitted with data:", formData);
 
         try {
             const supabase = createClient()
@@ -76,8 +64,8 @@ export default function SignUpPage() {
             
             if ( error) {
                 console.log('sign in error: ', error)
-                // console.log('data user?? ', data.user)
                 setError(true)
+                setSubmitting(false)
                 return
             }
             
@@ -88,6 +76,7 @@ export default function SignUpPage() {
             console.log('sign in error: ', error)
                 // console.log('data user?? ', data.user)
                 setError(true)
+                setSubmitting(false)
                 return
         }
     }
@@ -107,11 +96,13 @@ export default function SignUpPage() {
           <div>
             <label className="block text-sm font-medium">Course Email</label>
             <input
+              autoFocus
               name="email"
               id="email"
               type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={handleKeyDown}
               className="mt-1 w-full border rounded-lg p-2"
               placeholder="proshop@oakvalleygc.com"
             />
@@ -123,8 +114,10 @@ export default function SignUpPage() {
             <input
               name="password"
               type="password"
+              id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={handleKeyDown}
               className="mt-1 w-full border rounded-lg p-2"
               placeholder="••••••••"
             />
@@ -133,10 +126,10 @@ export default function SignUpPage() {
 
 
           {/* Submit */}
-          <button disabled={!validated} onClick={handleSubmit} 
+          <button disabled={submitting} onClick={handleSubmit} 
             className="w-full bg-green-700 text-white rounded-xl py-3 font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:cursor-pointer"
         >
-            Sign In
+            {!submitting ? 'Sign In' : 'Signing in...' }
           </button>
 
           {/* Footer */}
