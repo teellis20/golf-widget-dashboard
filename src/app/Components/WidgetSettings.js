@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import MyToggle from "./MyToggle";
 import { createClient } from "@/lib/supabase/client";
 
-export default function WidgetSettings({data, setData }) {
+export default function WidgetSettings({data, setData, setSavedSuccessfully, setSaveError }) {
     const [isDirty, setIsDirty] = useState(false);
     const [saving, setSaving] = useState(false);
     
@@ -15,17 +15,6 @@ export default function WidgetSettings({data, setData }) {
         widget_theme: data.widget_theme,
         widget_position: data.widget_position
     });
-
-    useEffect(() => {
-        initialSettings.current = {
-        showPinPlacement: true,
-        showCartRules: true,
-        showCourseConditions: true,
-        showWeather: true,
-        widget_theme: data.widget_theme,
-        widget_position: data.widget_position
-        }
-    }, [data])
 
     // TODO this allowing certain features is a future project. keep as static true/false for now
 
@@ -68,10 +57,13 @@ export default function WidgetSettings({data, setData }) {
                 .single();
 
             if (error) {
-                alert('Error Saving. Please try again: ' + error.message);
+                // alert('Error Saving. Please try again: ' + error.message);
+                setSaveError()
                 return;
             }
-            //TODO add success alert
+            initialSettings.current.widget_position = updatedCourse.widget_position
+            initialSettings.current.widget_theme = updatedCourse.widget_theme
+            setSavedSuccessfully()
 
             // setData(prev => ({
             //     ...prev,

@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
-export default function OverrideTodaySection({ data, handleInputChange }) {
+export default function OverrideTodaySection({ data, handleInputChange, updateRef }) {
   const [showOverrideSelect, setShowOverrideSelect] = useState(false);
   const [selectedPin, setSelectedPin] = useState(null);
 
   const today = new Date().toLocaleDateString('en-CA', {day: '2-digit', month: '2-digit', year: 'numeric'});
-//   console.log('TODAY IN ISO: ', today)
 
     const handleSave = async () => {
         if (selectedPin === null || selectedPin === '' ) return;
@@ -22,11 +21,18 @@ export default function OverrideTodaySection({ data, handleInputChange }) {
             current_pin_last_updated: new Date()
           })
           .eq('id', data.id)
+          .select()
+          .single()
           
           if (error) {
             console.log('Error: ', error)
             return
           }
+
+          handleInputChange('current_pin_last_updated', updatedData.current_pin_last_updated)
+          updatedData.current_pin = selectedPin
+
+          updateRef(updatedData)
         } catch (err) {
           console.log('error in catch: ', err)
         }

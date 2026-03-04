@@ -2,25 +2,67 @@
 
 import { useEffect, useState, useRef } from "react";
 import MyToggle from "./MyToggle";
-import { useRouter } from "next/navigation";
 import PinLocations from "./PinLocation";
 import { createClient } from "@/lib/supabase/client";
 import calculateDayDifference from "@/lib/calculateDayDifference";
 
-export default function TodaysSettings({data, setData}) {
-    const router = useRouter()
-        
+export default function TodaysSettings({data, setData, setSavedSuccessfully, setSaveError}) {     
     const [todayDirty, setTodayDirty] = useState(false);
-    const initialDataRef = useRef(data);
+    const initialDataRef = useRef(null);
+
+    const pickTodaySettings = (d = {}, base = {}) => ({
+      course_id: d.id ?? base.id ?? null,
+
+      current_pin: d.current_pin ?? base.current_pin ?? null,
+      current_cart_rule: d.current_cart_rule ?? base.current_cart_rule ?? null,
+      current_condition: d.current_condition ?? base.current_condition ?? null,
+
+      weather_delay: d.weather_delay ?? base.weather_delay ?? false,
+      weather_delay_resume_time: d.weather_delay_resume_time ?? base.weather_delay_resume_time ?? null,
+
+      course_closed: d.course_closed ?? base.course_closed ?? false,
+      course_closed_reason: d.course_closed_reason ?? base.course_closed_reason ?? null,
+
+      pin_mode: d.pin_mode ?? base.pin_mode ?? null,
+      pin_rotation_start: d.pin_rotation_start ?? base.pin_rotation_start ?? null,
+      pin_rotation_index: d.pin_rotation_index ?? base.pin_rotation_index ?? null,
+
+      pin_override_date: d.pin_override_date ?? base.pin_override_date ?? null,
+
+      current_pin_last_updated: d.current_pin_last_updated ?? base.current_pin_last_updated ?? null,
+      current_condition_last_updated: d.current_condition_last_updated ?? base.current_condition_last_updated ?? null,
+      current_rule_last_updated: d.current_rule_last_updated ?? base.current_rule_last_updated ?? null,
+    });
+
+    const shallowEqual = (a, b) => {
+      for (const k in a) if (a[k] !== b[k]) return false;
+      for (const k in b) if (a[k] !== b[k]) return false;
+      return true;
+    };
 
     useEffect(() => {
-      if (JSON.stringify(data) !== JSON.stringify(initialDataRef.current)) {
-        setTodayDirty(true);
-      } else {
-        setTodayDirty(false);
+
+      if (!initialDataRef.current && data) {
+        initialDataRef.current = pickTodaySettings(data, data);
+        return
       }
 
+      if (!initialDataRef.current) return;
+
+      const current = pickTodaySettings(data, data);
+      setTodayDirty(!shallowEqual(current, initialDataRef.current));
+
     }, [data])
+
+
+    const updateInitialData = (newData, removeFlag) => {
+      if (removeFlag) {
+        initialDataRef.current.pin_override_date = newData.pin_override_date
+        initialDataRef.current.current_pin = newData.current_pin
+        return
+      }
+      initialDataRef.current = pickTodaySettings(newData, data)
+    }
 
 
     const convertToLocaleTime = (string) => {
@@ -80,11 +122,11 @@ export default function TodaysSettings({data, setData}) {
 
         if (error) {
           console.log('Error: ', error)
-          alert('Error saving todays settings. Please try again.')
+          setSaveError();
           return
         }
 
-        initialDataRef.current = data;
+        initialDataRef.current = pickTodaySettings(data);
 
         setData((prev) => ({
             ...prev,
@@ -100,11 +142,11 @@ export default function TodaysSettings({data, setData}) {
 
       } catch (err) {
         console.log('err in catch: ', err)
-        alert('Error saving todays settings. Please try again.')
+        setSaveError()
         return
       }
       
-       
+      setSavedSuccessfully();
       setTodayDirty(false);
     }
 
@@ -137,7 +179,7 @@ export default function TodaysSettings({data, setData}) {
          <section className="bg-white rounded-2xl shadow p-6 space-y-6">
                   <h2 className="text-xl font-semibold">Today's Settings</h2>
         
-                  <PinLocations data={data} handleInputChange={handleInputChange} lastUpdatedConverter={convertToLocaleTime}/>
+                  <PinLocations data={data} handleInputChange={handleInputChange} lastUpdatedConverter={convertToLocaleTime} updateRef={updateInitialData} />
         
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Cart Rules */}
@@ -242,6 +284,7 @@ export default function TodaysSettings({data, setData}) {
                   >
                     Save Today's Updates
                   </button>
+
                 </section>
     )
 }

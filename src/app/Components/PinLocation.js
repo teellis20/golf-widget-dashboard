@@ -5,7 +5,7 @@ import OverrideTodaySection from "./OverrideTodaySection";
 import { createClient } from "@/lib/supabase/client";
 import { getCurrentAutoPin } from "@/lib/getCurrentAutoPin";
 
-export default function PinLocations({data, handleInputChange, lastUpdatedConverter}) {
+export default function PinLocations({data, handleInputChange, lastUpdatedConverter, updateRef}) {
 
     const router = useRouter();
 
@@ -14,6 +14,10 @@ export default function PinLocations({data, handleInputChange, lastUpdatedConver
 
         const today = new Date().toLocaleDateString('en-CA', {day: '2-digit', month: '2-digit', year: 'numeric'});
         return data.pin_override_date === today;
+    }
+
+    const handleUpdateRef = (newData, flag) => {
+        updateRef(newData, flag)
     }
 
     const handleRemoveOverride = async () => {
@@ -33,9 +37,13 @@ export default function PinLocations({data, handleInputChange, lastUpdatedConver
             }
 
             const newPin = getCurrentAutoPin(data.pin_rotation_start, data.pin_rotation_index, data.pin_locations)
-
             handleInputChange("pin_override_date", null);
             handleInputChange("current_pin", newPin);
+            const newData = {
+                pin_override_date: null,
+                current_pin: newPin
+            }
+            handleUpdateRef(newData, true)
 
         } catch (err) {
             console.log('error in catch: ', err)
@@ -156,8 +164,9 @@ export default function PinLocations({data, handleInputChange, lastUpdatedConver
                         </button>
                     </div>
                     <OverrideTodaySection
-                    data={data}
-                    handleInputChange={handleInputChange}
+                        data={data}
+                        handleInputChange={handleInputChange}
+                        updateRef={handleUpdateRef}
                     />
                     </>
                 )}
