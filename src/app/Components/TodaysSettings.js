@@ -6,7 +6,7 @@ import PinLocations from "./PinLocation";
 import { createClient } from "@/lib/supabase/client";
 import calculateDayDifference from "@/lib/calculateDayDifference";
 
-export default function TodaysSettings({data, setData, setSavedSuccessfully, setSaveError}) {     
+export default function TodaysSettings({data, setData, setSavedSuccessfully, setSaveError, updatedRefData}) {     
     const [todayDirty, setTodayDirty] = useState(false);
     const initialDataRef = useRef(null);
 
@@ -35,6 +35,8 @@ export default function TodaysSettings({data, setData, setSavedSuccessfully, set
     });
 
     const shallowEqual = (a, b) => {
+      // console.log('CHECKING DATA: ', a)
+      // console.log('CHECKING REF: ', b)
       for (const k in a) if (a[k] !== b[k]) return false;
       for (const k in b) if (a[k] !== b[k]) return false;
       return true;
@@ -53,6 +55,15 @@ export default function TodaysSettings({data, setData, setSavedSuccessfully, set
       setTodayDirty(!shallowEqual(current, initialDataRef.current));
 
     }, [data])
+
+    useEffect(() => {
+      if (!updatedRefData) return
+      initialDataRef.current = pickTodaySettings(updatedRefData, data)
+
+      const current = pickTodaySettings(data, data);
+      setTodayDirty(!shallowEqual(current, initialDataRef.current));
+
+    }, [updatedRefData])
 
 
     const updateInitialData = (newData, removeFlag) => {
@@ -224,14 +235,6 @@ export default function TodaysSettings({data, setData, setSavedSuccessfully, set
                       </select>
                       <p className="text-sm text-gray-500 mt-1">Last updated: {convertToLocaleTime(data.current_condition_last_updated)}</p>
                     </div>
-                    {/* <div>
-                      <label className="block font-medium">Greens Speed</label>
-                      <input
-                        onChange={(e) => handleInputChange('greensSpeed', e.target.value)}
-                        className="mt-1 w-full border rounded-lg p-2"
-                        placeholder="e.g. 10.5"
-                      />
-                    </div> */}
                   </div>
 
                   {/* Course Closure */}
@@ -251,7 +254,6 @@ export default function TodaysSettings({data, setData, setSavedSuccessfully, set
                         </div>
                   </div>
                   {/* weather delay */}
-                  {/* <WeatherDelaySection /> */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="flex items-center gap-2">
                             <MyToggle label='Weather Delay?' value={data.weather_delay} setValue={(value) => handleInputChange('weather_delay', value)} />
@@ -268,15 +270,7 @@ export default function TodaysSettings({data, setData, setSavedSuccessfully, set
                             />
                         </div>
                   </div>
-        
-                  {/* <div>
-                    <label className="block font-medium">Notes</label>
-                    <textarea
-                      className="mt-1 w-full border rounded-lg p-2"
-                      rows={3}
-                      placeholder="Optional notes for golfers"
-                    />
-                  </div> */}
+
         
                   <button disabled={!todayDirty} 
                     className="w-full bg-green-700 text-white rounded-xl py-3 font-medium hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"

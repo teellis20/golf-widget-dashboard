@@ -8,12 +8,14 @@ import Preview from './Preview';
 import BottomTicker from './BottomTicker';
 import { createClient } from '@/lib/supabase/client';
 import { CloudCheck, CloudAlert, X } from "lucide-react";
+import { getCurrentAutoPin } from '@/lib/getCurrentAutoPin';
 
 export default function ClientWrapper({data}) {
     const [stateData, setStateData] = useState(data)
     const [savedSuccessfully, setSavedSuccessfully] = useState(false)
     const [saveError, setSaveError] = useState(false)
     const [toastText, setToastText] = useState('');
+    const [updatedTodaysSetting, setUpdatedTodaysSetting] = useState(null);
 
     useEffect(() => {
         // console.log('change to state data: ', stateData);
@@ -39,6 +41,28 @@ export default function ClientWrapper({data}) {
             });
         };
 
+        function resolvePin(pinLocations) {
+            if (!stateData) return null;
+    
+            // Manual mode
+            if (stateData.pin_mode !== 'auto') {
+            return stateData.current_pin;
+            }
+    
+            //Override mode
+            if (stateData.pin_override_date === new Date().toLocaleDateString('en-CA', {day: '2-digit', month: '2-digit', year: 'numeric'}) ) {
+            return stateData.current_pin;
+            }
+    
+            // Auto mode
+            if (!stateData.pin_rotation_start || !stateData.pin_locations?.length) {
+            return stateData.current_pin;
+            }
+    
+            return getCurrentAutoPin(stateData.pin_rotation_start, stateData.pin_rotation_index, pinLocations);
+    
+        }
+
         try{
 
             const supabase = await createClient();
@@ -57,13 +81,33 @@ export default function ClientWrapper({data}) {
 
             const { data: newData, defaults} = returnedData;
 
-            // console.log('Defaults from RPC: ', defaults)
-
             const newDefault = `default_${tableName.slice(0, -1)}`;
-            // console.log('(new Default: ', newDefault)
             const fullDefaultObj = stateData[tableName].find(item => item.id === defaults[newDefault + '_id'])
 
-            // console.log('full default obj: ', fullDefaultObj)
+            if (tableName === 'pin_locations') {
+                const pinsMapped = newData.map(p => ({
+                    id: p.id,
+                    label: p.label
+                }))
+                
+                setStateData(prev => ({
+                    ...prev,
+                    current_pin: resolvePin(pinsMapped),
+                    [tableName]: newData,
+                    [newDefault]: fullDefaultObj ? fullDefaultObj : null
+                    
+                }));
+
+                setUpdatedTodaysSetting({
+                    ...stateData, 
+                    current_pin: resolvePin(pinsMapped),
+                    [tableName]: newData,
+                    [newDefault]: fullDefaultObj ? fullDefaultObj : null
+                })
+                
+                setSavedSuccessfully(capitalize(parseTableName))
+                return;
+            }
 
             setStateData(prev => ({
                 ...prev,
@@ -72,8 +116,13 @@ export default function ClientWrapper({data}) {
                 
             }));
 
-            setSavedSuccessfully(capitalize(parseTableName))
+            setUpdatedTodaysSetting({
+                ...stateData, 
+                [tableName]: newData,
+                [newDefault]: fullDefaultObj ? fullDefaultObj : null
+            })
 
+            setSavedSuccessfully(capitalize(parseTableName))
             
         } catch (err) {
             console.log('error in catch: ', err)
@@ -94,7 +143,13 @@ export default function ClientWrapper({data}) {
     return (
         <>
             {/* Today Panel */}
-            <TodaysSettings data={stateData} setData={setStateData} setSaveError={() => handleSaveError(`Today's Updates`)} setSavedSuccessfully={() => handleSuccessfulSave(`Today's Updates`)} />
+            <TodaysSettings 
+                data={stateData} 
+                setData={setStateData} 
+                setSaveError={() => handleSaveError(`Today's Updates`)} 
+                setSavedSuccessfully={() => handleSuccessfulSave(`Today's Updates`)} 
+                updatedRefData={updatedTodaysSetting}
+            />
 
             {/* Management Panels */}
             <section className="grid grid-cols-1 md:grid-cols-2 gap-6">

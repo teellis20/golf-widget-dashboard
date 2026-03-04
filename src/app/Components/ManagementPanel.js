@@ -17,6 +17,7 @@ export default function ManagementPanel({
   const [deleteSelected, setDeleteSelected] = useState(false);
   const [selectedDefaultId, setSelectedDefaultId] = useState(defaultItemId);
   const [hasChanges, setHasChanges] = useState(false);
+  const [hasEmptyLabels, setHasEmptyLabels] = useState(false);
 
   const initialArrayRef = useRef(array);
   const [loading, setLoading] = useState(false);
@@ -28,6 +29,7 @@ export default function ManagementPanel({
   }, [array, defaultItemId])
 
   useEffect(() => {
+    setHasEmptyLabels(items.some(it => !it.label || it.label.trim() === ''));
 
     if (JSON.stringify(items) !== JSON.stringify(initialArrayRef.current)) {
         return setHasChanges(true);
@@ -43,8 +45,14 @@ export default function ManagementPanel({
   }, [items, selectedDefaultId, defaultItemId])
 
   const addNewItem = () => {
-    setItems([...items, { label: '' }]);
+    setItems(prev => [...prev, { label: '' }]);
     setEditingIndex(items.length);
+    setEditingValue('');
+  };
+
+  const startEdit = (index) => {
+    setEditingIndex(index);
+    setEditingValue(items[index]?.label || '');
   };
 
   const handleSaveEdit = (index) => {
@@ -159,9 +167,9 @@ export default function ManagementPanel({
 
               {editingIndex === index ? (
                 <input
+                  value={editingValue}
                   onChange={(e) => setEditingValue(e.target.value)}
                   className="border rounded-lg pl-2 w-full"
-                  defaultValue={item.label}
                 />
               ) : (
                 <span>
@@ -200,7 +208,7 @@ export default function ManagementPanel({
             ) : (
               <button
                 className="text-sm text-blue-600"
-                onClick={() => setEditingIndex(index)}
+                onClick={() => startEdit(index)}
               >
                 Edit
               </button>
@@ -247,21 +255,34 @@ export default function ManagementPanel({
         )}
 
         {hasChanges && (
-          <div className="flex justify-between mt-6 gap-3">
-              <button
-                onClick={handleReset}
-                disabled={!hasChanges}
-                className="w-full text-sm border py-2 rounded-lg hover:cursor-pointer"
-              >
-                Reset
-              </button>
+          <div className="w-full"> 
+            <div className="flex justify-between mt-6 gap-3">
+                <button
+                  onClick={handleReset}
+                  disabled={!hasChanges}
+                  className="w-full text-sm border py-2 rounded-lg hover:cursor-pointer"
+                >
+                  Reset
+                </button>
+                {(() => {
+                  const canSave = !hasEmptyLabels && editingIndex === null && !loading;
 
-              <button
-                onClick={handleSaveAll}
-                className="w-full bg-black text-white py-2 rounded-lg hover:cursor-pointer"
-              >
-                {!loading ? 'Save Changes' : 'Saving...'}
-              </button>
+                  return (
+                      <button
+                        onClick={handleSaveAll}
+                        disabled={!canSave}
+                        className={`w-full text-white py-2 rounded-lg ${canSave ? 'bg-black hover:cursor-pointer' : 'bg-gray-300 text-gray-600 cursor-not-allowed'}`}
+                      >
+                        {!loading ? 'Save Changes' : 'Saving...'}
+                      </button>
+                  )
+                })()}
+              </div>
+                {(editingIndex !== null || hasEmptyLabels) && (
+                    <div className="flex justify-center">
+                      <div className="text-xs text-red-500 mt-2">Accept or cancel edits before saving.</div>
+                    </div>
+                      )}
            </div>
         )}
       </div>
