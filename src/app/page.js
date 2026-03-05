@@ -42,6 +42,7 @@ export default async function AdminDashboardPage() {
         current_condition_last_updated,
         widget_position,
         widget_theme,
+        widget_default_open,
         pin_mode,
         pin_rotation_start,
         pin_rotation_index,

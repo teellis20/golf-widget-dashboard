@@ -13,7 +13,8 @@ export default function WidgetSettings({data, setData, setSavedSuccessfully, set
         showCourseConditions: true,
         showWeather: true,
         widget_theme: data.widget_theme,
-        widget_position: data.widget_position
+        widget_position: data.widget_position,
+        widget_default_open: data.widget_default_open
     });
 
     // TODO this allowing certain features is a future project. keep as static true/false for now
@@ -42,7 +43,7 @@ export default function WidgetSettings({data, setData, setSavedSuccessfully, set
     };
 
     const handleSave = async () => {
-        console.log('SAVED!')
+        // console.log('SAVED!')
         setSaving(true);
         try {
             const supabase = await createClient();
@@ -50,7 +51,8 @@ export default function WidgetSettings({data, setData, setSavedSuccessfully, set
                 .from('courses')
                 .update({
                     widget_position: data.widget_position,
-                    widget_theme: data.widget_theme
+                    widget_theme: data.widget_theme,
+                    widget_default_open: data.widget_default_open
                 })
                 .eq('id', data.id)
                 .select()
@@ -63,6 +65,7 @@ export default function WidgetSettings({data, setData, setSavedSuccessfully, set
             }
             initialSettings.current.widget_position = updatedCourse.widget_position
             initialSettings.current.widget_theme = updatedCourse.widget_theme
+            initialSettings.current.widget_theme = updatedCourse.widget_default_open
             setSavedSuccessfully()
 
             // setData(prev => ({
@@ -139,19 +142,22 @@ export default function WidgetSettings({data, setData, setSavedSuccessfully, set
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <MyToggle disabled label='Show Pin Placement' value={true} setValue={(e) => handleToggleChange('showPinPlacement', e.target.value)}/>
+                    <MyToggle label='Widget Default Open' value={data?.widget_default_open} setValue={(e) => handleToggleChange('widget_default_open', e)}/>
                 </div>
                 <div className="flex items-center gap-2">
-                    <MyToggle disabled label='Show Cart Rules' value={true} setValue={(e) => handleToggleChange('showCartRules', e.target.value)}/>
+                    <MyToggle disabled label='Show Pin Placement' value={true} setValue={(e) => handleToggleChange('showPinPlacement', e)}/>
                 </div>
                 <div className="flex items-center gap-2">
-                    <MyToggle disabled label='Show Course Conditions' value={true} setValue={(e) => handleToggleChange('showCourseConditions', e.target.value)}/>
+                    <MyToggle disabled label='Show Cart Rules' value={true} setValue={(e) => handleToggleChange('showCartRules', e)}/>
                 </div>
                 <div className="flex items-center gap-2">
-                    <MyToggle disabled label='Show Weather' value={true} setValue={(e) => handleToggleChange('showWeather', e.target.value)}/>
+                    <MyToggle disabled label='Show Course Conditions' value={true} setValue={(e) => handleToggleChange('showCourseConditions', e)}/>
                 </div>
                 <div className="flex items-center gap-2">
-                    <MyToggle disabled label='Show Sunset' value={true} setValue={(e) => handleToggleChange('showSunset', e.target.value)}/>
+                    <MyToggle disabled label='Show Weather' value={true} setValue={(e) => handleToggleChange('showWeather', e)}/>
+                </div>
+                <div className="flex items-center gap-2">
+                    <MyToggle disabled label='Show Sunset' value={true} setValue={(e) => handleToggleChange('showSunset', e)}/>
                 </div>
             </div>
             <button onClick={handleSave} disabled={!isDirty || saving} className="w-full bg-green-700 text-white rounded-xl py-3 font-medium hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
