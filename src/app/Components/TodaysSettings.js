@@ -78,6 +78,7 @@ export default function TodaysSettings({data, setData, setSavedSuccessfully, set
 
     const convertToLocaleTime = (string) => {
       if (string === null) return ''
+      console.log('string: ', string)
       const onlyTime = new Date(string).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric' })
       const daysDifference = calculateDayDifference(string, data.timezone)
       if (daysDifference == 0) {
@@ -88,11 +89,11 @@ export default function TodaysSettings({data, setData, setSavedSuccessfully, set
         return 'Yesterday, ' + onlyTime
       }
       if (daysDifference < 7) {
-        return 'Last ' + time.toLocaleDateString('en-US', {
+        return new Date(string).toLocaleDateString('en-US', {
           weekday: 'long',
         })
       } else {
-        return time.toLocaleDateString('en-US', {
+        return new Date(string).toLocaleDateString('en-US', {
           month: 'numeric', day: 'numeric', 
         })
       }

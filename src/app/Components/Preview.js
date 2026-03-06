@@ -6,7 +6,6 @@ import logo from '../../img/icon.png'
 import lightningIcon from '../../img/lightningIcon.png'
 import cartIcon from '../../img/cartIcon.svg'
 import sunsetIcon from '../../img/sunsetIcon.svg'
-import windIcon from '../../img/windIcon.png'
 import pinIcon from '../../img/pinIcon.svg'
 import courseIcon from '../../img/courseIcon.svg'
 import closedIcon from '../../img/closedIcon.png'
@@ -42,7 +41,7 @@ export default function Preview ({data}) {
             const mm = returnTime.slice(3)
             time.setHours(hh, mm)
             returnTime = time.toLocaleTimeString('en-US', {
-                hour: '2-digit',
+                hour: 'numeric',
                 minute: '2-digit'
             })
         }
@@ -50,7 +49,7 @@ export default function Preview ({data}) {
             <div id='delay-card' className='card'>
                 <Image className='card-icon' id='lightning-icon' alt='Lightning' src={lightningIcon}/>
                 <p className='card-title'>Weather Delay Until:</p>
-                <p className='card-subtitle' id='delay-time'>~{returnTime}</p>
+                <p className='card-subtitle' id='delay-time'>~{returnTime || '30 Minutes'}</p>
             </div>
         )
     }

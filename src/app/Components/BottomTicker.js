@@ -1,7 +1,6 @@
 import lightningIcon from '../../img/lightningIcon.png'
 import cartIcon from '../../img/cartIcon.svg'
 import sunsetIcon from '../../img/sunsetIcon.svg'
-import windIcon from '../../img/windIcon.png'
 import pinIcon from '../../img/pinIcon.svg'
 import courseIcon from '../../img/courseIcon.svg'
 import closedIcon from '../../img/closedIcon.png'
