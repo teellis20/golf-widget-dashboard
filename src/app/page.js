@@ -11,6 +11,7 @@ import Preview from "./Components/Preview";
 import ClientWrapper from "./Components/ClientWrapper";
 import { getCurrentAutoPin } from "@/lib/getCurrentAutoPin";
 import calculateDayDifference from "@/lib/calculateDayDifference";
+import { act } from "react";
 
 export default async function AdminDashboardPage() {
     const today = new Date();
@@ -47,6 +48,8 @@ export default async function AdminDashboardPage() {
         pin_rotation_start,
         pin_rotation_index,
         pin_override_date,
+
+        subscription:subscriptions!subscriptions_course_id_fkey ( subscription_status )
         
         default_cart_rule:cart_rules!courses_default_cart_rule_id_fkey (
           id,
@@ -92,6 +95,15 @@ export default async function AdminDashboardPage() {
       if (error) {
         console.log('ERROR: ', error)
     }
+
+  const status = Array.isArray(data.subscription)
+    ? data.subscription[0]?.subscription_status
+    : data.subscription?.subscription_status
+
+  console.log('SUB STATUS : ', status)
+  const active = ['active', 'trialing'].includes(status)
+
+    if (!active) return redirect('/billing')
 
   const weatherUrl = `https://oxcqifofyajbgxdsvzkr.supabase.co/functions/v1/get-weather-data?slug=${data?.slug}`
   const weatherRes = await fetch(weatherUrl)
