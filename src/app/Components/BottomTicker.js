@@ -34,10 +34,72 @@ export default function BottomTicker({data}) {
         timeZone: 'UTC'
     };
 
+    const WeatherDelay = () => {
+        let returnTime = data?.weather_delay_resume_time
+        
+        if (returnTime) {
+            const time = new Date()
+            const hh = returnTime.slice(0,2);
+            const mm = returnTime.slice(3)
+            time.setHours(hh, mm)
+            returnTime = time.toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit'
+            })
+        }
+
+        return (
+            <div className='flex w-full bg-yellow-300 items-center justify-center'>
+                <Image height={60} width={60} src={lightningIcon} alt='Lightning Icon' />
+                <div className='ml-5 mr-5 text-center text-black'>
+                    <p className='font-bold'>Weather Delay</p>
+                    <p>~{returnTime || '30 minutes'}</p>
+                </div>
+                <Image height={60} width={60} src={lightningIcon} alt='Lightning Icon' />
+            </div>
+        )
+    }
+
+    const CourseClosed = () => {
+        return (
+            <div className='flex w-full bg-red-400 items-center justify-center'>
+                <Image height={60} width={60} src={closedIcon} alt='closed Icon' />
+                <div className='ml-5 mr-5 text-center text-black'>
+                    <p className='font-bold'>Course Closed</p>
+                    <p>{data?.course_closed_reason || 'Scheduled'}</p>
+                </div>
+                <Image height={60} width={60} src={closedIcon} alt='closed Icon' />
+            </div>
+        )
+    }
+
+    if (data?.course_closed) {
+        return (
+            <div id="gw-ticker-wrapper">
+                <div onClick={() => toggleTicker()} id="gw-toggle" className={`gw-${data.widget_theme} open` }>{showingOpen ? <ChevronDown /> : <ChevronUp />}</div>
+                <div id='gw-ticker' className={`open gw-${data.widget_theme}`}>
+                    <CourseClosed />
+                </div>
+            </div>
+        )
+    }
+
+    if (data?.weather_delay) {
+        return (
+            <div id="gw-ticker-wrapper">
+                <div onClick={() => toggleTicker()} id="gw-toggle" className={`gw-${data.widget_theme} open` }>{showingOpen ? <ChevronDown /> : <ChevronUp />}</div>
+                <div id='gw-ticker' className={`open gw-${data.widget_theme}`}>
+                    <WeatherDelay />
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div id="gw-ticker-wrapper">
             <div onClick={() => toggleTicker()} id="gw-toggle" className={`gw-${data.widget_theme} open` }>{showingOpen ? <ChevronDown /> : <ChevronUp />}</div>
             <div id='gw-ticker' className={`open gw-${data.widget_theme}`}>
+
                 <div className="gw-ticker-group">
                     
                         <div className='gw-ticker-item'>

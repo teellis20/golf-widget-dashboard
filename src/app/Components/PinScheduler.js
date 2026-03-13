@@ -47,7 +47,7 @@ export default function PinScheduler({pin_locations, current_pin_index, userId})
       const pinIndex = ((i % numberOfPins) + pinSelected) % numberOfPins;
 
       preview.push({
-        date: date.toLocaleDateString("en-US", {
+        date: date.toLocaleDateString("en-CA", {
           dateStyle: "full",
         }),
         pin: pin_locations[pinIndex]?.label,

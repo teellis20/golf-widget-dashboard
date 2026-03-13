@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import Image from 'next/image';
 import { X } from 'lucide-react';
 import logo from '../../img/icon.png'
@@ -14,6 +14,8 @@ import weatherIcons from '@/lib/weatherIcons';
 
 
 export default function Preview ({data}) {
+    const panelRef = useRef(null);
+    const wrapperRef = useRef(null);
     const [isShowing, setIsShowing] = useState(false)
      const now = new Date().toLocaleDateString('en-US', {
         weekday: 'short',
@@ -29,8 +31,16 @@ export default function Preview ({data}) {
         timeZone: 'UTC'
     };
 
-   
-    //TODO add outside click to close maybe
+    
+    // Click outside to close
+    // document.addEventListener('click', (e) => {
+    //     console.log('panelRef: ', panelRef.current)
+    //     console.log('e target: ', e.target)
+    //     if (!isShowing) return;
+    //     if (panelRef.current?.contains(e.target) || wrapperRef.current?.contains(e.target)) return;
+    //     setIsShowing(false);
+    // });
+    //TODO add outside click to close maybe above not working
 
     const WeatherDelay = () => {
         let returnTime = data?.weather_delay_resume_time
@@ -96,7 +106,7 @@ export default function Preview ({data}) {
 
     if (!isShowing) {
         return (
-            <div className={'my-widget gw-' + data.widget_position}>
+            <div ref={wrapperRef} className={'my-widget gw-' + data.widget_position}>
                 <button id='widget-container' type='button' 
                     aria-label='Open widget' onClick={() => setIsShowing(!isShowing)}
                 >
@@ -108,7 +118,7 @@ export default function Preview ({data}) {
     }
 
     return (
-        <aside aria-hidden={!isShowing} className={`widget-panel ${isShowing ? 'open' : ''} gw-${data.widget_position} gw-${data.widget_theme}`}>
+        <aside ref={panelRef} aria-hidden={!isShowing} className={`widget-panel ${isShowing ? 'open' : ''} gw-${data.widget_position} gw-${data.widget_theme}`}>
             <header className="widget-panel-header">
             {/* <button class="widget-panel-refresh" aria-label="Refresh widget">\u21bb</button> */}
             <h2 className="widget-panel-title">{now}</h2>

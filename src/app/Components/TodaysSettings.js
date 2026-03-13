@@ -78,7 +78,6 @@ export default function TodaysSettings({data, setData, setSavedSuccessfully, set
 
     const convertToLocaleTime = (string) => {
       if (string === null) return ''
-      console.log('string: ', string)
       const onlyTime = new Date(string).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric' })
       const daysDifference = calculateDayDifference(string, data.timezone)
       if (daysDifference == 0) {
